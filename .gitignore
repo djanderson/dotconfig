@@ -1,0 +1,3 @@
+# Exclude everything but .el files in .emacs.d/
+emacs.d/*
+!emacs.d/*.el
