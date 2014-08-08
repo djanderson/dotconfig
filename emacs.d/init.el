@@ -23,7 +23,7 @@
 (setq mac-option-modifier nil)
 
 ;; turn off toolbar and menubar and scrollbar!
-(when (or window-system (and (>= emacs-major-version 23) (server-running-p)))
+(when window-system
   (if (fboundp 'menu-bar-mode)
       (menu-bar-mode 0))
   (if (fboundp 'tool-bar-mode)
@@ -53,7 +53,7 @@
 ; Shells
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setenv "EDITOR" "/usr/local/bin/emacsclient")
+(setenv "EDITOR" "/usr/bin/emacsclient")
 (setenv "PAGER" "cat")
 
 (defvar local-shells
@@ -68,9 +68,9 @@
  '(comint-completion-addsuffix t)       ; insert space/slash after file completion
  '(comint-buffer-maximum-size 20000)    ; max length of the buffer in lines
  '(comint-prompt-read-only nil)         ; if this is t, it breaks shell-command
+ '(comint-input-ring-size 1000)         ; max shell history size
  '(comint-get-old-input (lambda () "")) ; what to run when i press enter on a
                                         ; line above the current prompt
- '(comint-input-ring-size 1000)         ; max shell history size
 )
 
 ;; truncate buffers continuously
@@ -79,6 +79,13 @@
 ; interpret and use ansi color codes in shell buffers
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
+(defun make-my-shell-output-read-only (text)
+  "Add output-filter-functions to make stdout read only in my shells."
+  (if (member (buffer-name) local-shells)
+      (let ((inhibit-read-only t)
+            (output-end (process-mark (get-buffer-process (current-buffer)))))
+        (put-text-property comint-last-output-start output-end 'read-only t))))
+(add-hook 'comint-output-filter-functions 'make-my-shell-output-read-only)
 
 (defun set-scroll-conservatively ()
   "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell."
@@ -104,6 +111,13 @@
   (interactive)
   (let ((inhibit-read-only t))
     (comint-send-input)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Programming
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Use sh-mode for Dockerfile
+(add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
@@ -154,5 +168,9 @@
 (make-face 'ugly-yellow-face)
 (set-face-attribute 'ugly-yellow-face nil
                     :foreground "yellow" :background "red")
+
+; don't highlight trailing whitespace in some modes
+(dolist (hook '(shell-mode-hook compilation-mode-hook diff-mode-hook))
+  (add-hook hook (lambda () (set-variable 'show-trailing-whitespace nil))))
 
 (start-shells)
