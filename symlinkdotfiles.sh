@@ -8,7 +8,7 @@ mkdir -p $oldfiles
 cd $dotfiles
 
 for file in $files; do
-    mv ~/.$file $oldfiles
+    mv -f ~/.$file $oldfiles
     echo "Creating symlink to $file in ~/.${file}."
-    ln -s $dotfiles/$file ~/.$file
+    ln -Tfs $dotfiles/$file ~/.$file
 done

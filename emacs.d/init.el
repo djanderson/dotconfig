@@ -170,7 +170,7 @@
                     :foreground "yellow" :background "red")
 
 ; don't highlight trailing whitespace in some modes
-(dolist (hook '(shell-mode-hook compilation-mode-hook diff-mode-hook))
+(dolist (hook '(shell-mode-hook term-mode-hook compilation-mode-hook diff-mode-hook))
   (add-hook hook (lambda () (set-variable 'show-trailing-whitespace nil))))
 
 (start-shells)
