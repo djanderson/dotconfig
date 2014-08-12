@@ -1,7 +1,7 @@
 #export PS1="\u@\h\w$ "
 PS1='\[\033[0;33m\]\u\[\033[0m\]@\[\033[0;32m\]\h\[\033[0m\]:\[\033[0;33m\]\w\[\033[0m\]\$ '
 export CLICOLOR=1
-export EDITOR=/usr/bin/vim
+export EDITOR="emacsclient -t"
 export LSCOLORS=GxFxCxDxBxegedabagaced
 export ANDROID_HOME="/Users/doug/android-sdks"
 export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
