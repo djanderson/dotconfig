@@ -2,7 +2,7 @@
 
 dotfiles=~/dotfiles
 oldfiles=~/dotfiles_old
-files="bashrc emacs.d"
+files="bashrc emacs.d gitconfig"
 
 mkdir -p $oldfiles
 cd $dotfiles

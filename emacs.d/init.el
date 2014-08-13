@@ -5,13 +5,14 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+  '("melpa" . "http://melpa.milkbox.net/packages/"))
 (package-initialize)
 
 (defvar my-packages '(better-defaults
                       clojure-mode
                       clojure-test-mode
-                      cider))
+                      cider
+                      magit))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
