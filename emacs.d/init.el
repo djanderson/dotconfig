@@ -12,7 +12,8 @@
                       clojure-mode
                       clojure-test-mode
                       cider
-                      magit))
+                      magit
+                      haskell-mode))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
