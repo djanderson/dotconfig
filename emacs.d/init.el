@@ -119,11 +119,16 @@
 ; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(require 'flycheck)
+
 ; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
 ; C
 (setq-default c-basic-offset 4 c-default-style "linux")
+
+(add-hook 'c-mode-common-hook
+          '(lambda () (flycheck-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
