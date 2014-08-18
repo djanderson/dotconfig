@@ -13,7 +13,8 @@
                       clojure-test-mode
                       cider
                       magit
-                      haskell-mode))
+                      haskell-mode
+                      flycheck))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -91,7 +92,7 @@
 
 (defun set-scroll-conservatively ()
   "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell."
-  (set (make-local-variable 'scroll-conservatively) 10))
+  (set (make-local-variable 'scroll-conservatively) 5))
 (add-hook 'shell-mode-hook 'set-scroll-conservatively)
 
 ;; make it harder to kill my shell buffers
@@ -102,7 +103,7 @@
 (defun start-shells ()
   (interactive)
   (let ((default-directory "~")
-        ;; trick comint into thinking the current window is 82 columns, since it
+        ;; trick comint into thinking the current window is 80 columns, since it
         ;; uses that to set the COLUMNS env var. otherwise it uses whatever the
         ;; current window's width is, which could be anything.
         (window-width (lambda () 80)))
@@ -121,17 +122,23 @@
 ; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
+; C
+(setq-default c-basic-offset 4 c-default-style "linux")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
+  '(electric-indent-mode t)
+  '(electric-pair-mode t)
+  '(electric-layout-mode t))
+
+(custom-set-variables
   '(line-number-mode t)
   '(column-number-mode t)
   '(visible-bell 'top-bottom)
-  '(indent-tabs-mode nil)      ; never use tabs for spacing
-  '(kill-whole-line t)         ; C-k kills the newline too
-)
+  '(indent-tabs-mode nil))      ; never use tabs for spacing
 
 ; turn on pending delete (when a region is selected, typing replaces it)
 (delete-selection-mode t)
@@ -176,3 +183,39 @@
   (add-hook hook (lambda () (set-variable 'show-trailing-whitespace nil))))
 
 (start-shells)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
