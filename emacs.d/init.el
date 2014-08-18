@@ -174,19 +174,6 @@
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
 
-; highlight trailing whitespace, tab characters, TODOs, and column 80
-(custom-set-variables '(show-trailing-whitespace t))
-(make-face 'ugly-red-face)
-(set-face-attribute 'ugly-red-face nil :foreground "red" :background "yellow")
-
-(make-face 'ugly-yellow-face)
-(set-face-attribute 'ugly-yellow-face nil
-                    :foreground "yellow" :background "red")
-
-; don't highlight trailing whitespace in some modes
-(dolist (hook '(shell-mode-hook term-mode-hook compilation-mode-hook diff-mode-hook))
-  (add-hook hook (lambda () (set-variable 'show-trailing-whitespace nil))))
-
 (start-shells)
 
 
