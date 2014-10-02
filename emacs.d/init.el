@@ -18,7 +18,8 @@
                       flycheck
                       flycheck-rust
                       flycheck-pyflakes
-                      rust-mode))
+                      rust-mode
+                      toml-mode))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
