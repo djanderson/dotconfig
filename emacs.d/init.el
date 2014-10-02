@@ -123,6 +123,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'flycheck)
+(flycheck-mode t)
+(cua-selection-mode t)
 
 ; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
@@ -130,8 +132,6 @@
 ; C
 (setq-default c-basic-offset 4 c-default-style "linux")
 
-(flycheck-mode t)
-(cua-selection-mode t)
 
 ; Python
 (add-hook 'python-mode-common-hook
@@ -186,43 +186,3 @@
 (global-unset-key [(control z)])
 
 (start-shells)
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(put 'erase-buffer 'disabled nil)
->>>>>>> 2e2fad3bda6deae102c81db421148e4195fe56af
