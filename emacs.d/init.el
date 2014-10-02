@@ -76,7 +76,7 @@
  ;; '(comint-completion-autolist t)     ; show completion list when ambiguous
  '(comint-input-ignoredups t)           ; no duplicates in command history
  '(comint-completion-addsuffix t)       ; insert space/slash after file completion
- '(comint-buffer-maximum-size 20000)    ; max length of the buffer in lines
+ '(comint-buffer-maximum-size 10000)    ; max length of the buffer in lines
  '(comint-prompt-read-only nil)         ; if this is t, it breaks shell-command
  '(comint-input-ring-size 1000)         ; max shell history size
  '(comint-get-old-input (lambda () "")) ; what to run when i press enter on a
@@ -130,8 +130,8 @@
 ; C
 (setq-default c-basic-offset 4 c-default-style "linux")
 
-(add-hook 'c-mode-common-hook
-          '(lambda () (flycheck-mode t)))
+(flycheck-mode t)
+(cua-selection-mode t)
 
 ; Python
 (add-hook 'python-mode-common-hook
@@ -186,3 +186,43 @@
 (global-unset-key [(control z)])
 
 (start-shells)
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(put 'erase-buffer 'disabled nil)
+>>>>>>> 2e2fad3bda6deae102c81db421148e4195fe56af
