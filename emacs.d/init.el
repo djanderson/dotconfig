@@ -9,12 +9,16 @@
 (package-initialize)
 
 (defvar my-packages '(better-defaults
+                      exec-path-from-shell
                       clojure-mode
                       clojure-test-mode
                       cider
                       magit
                       haskell-mode
-                      flycheck))
+                      flycheck
+                      flycheck-rust
+                      flycheck-pyflakes
+                      rust-mode))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -56,7 +60,10 @@
 ; Shells
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setenv "EDITOR" "/usr/bin/emacsclient")
+; inherit PATH var from shell (https://github.com/purcell/exec-path-from-shell)
+(require 'exec-path-from-shell)
+(exec-path-from-shell-initialize)
+
 (setenv "PAGER" "cat")
 
 (defvar local-shells
@@ -92,12 +99,8 @@
 
 (defun set-scroll-conservatively ()
   "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell."
-  (set (make-local-variable 'scroll-conservatively) 5))
+  (set (make-local-variable 'scroll-conservatively) 20))
 (add-hook 'shell-mode-hook 'set-scroll-conservatively)
-
-;; make it harder to kill my shell buffers
-(custom-set-variables '(emacs-lock-default-locking-mode 'kill))
-(add-hook 'shell-mode-hook 'emacs-lock-mode)
 
 ;; run a few shells.
 (defun start-shells ()
@@ -128,6 +131,14 @@
 (setq-default c-basic-offset 4 c-default-style "linux")
 
 (add-hook 'c-mode-common-hook
+          '(lambda () (flycheck-mode t)))
+
+; Python
+(add-hook 'python-mode-common-hook
+          '(lambda () (flycheck-mode t)))
+
+; Rust
+(add-hook 'rust-mode-common-hook
           '(lambda () (flycheck-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -175,39 +186,3 @@
 (global-unset-key [(control z)])
 
 (start-shells)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
