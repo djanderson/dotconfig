@@ -133,6 +133,9 @@
 ; C
 (setq-default c-basic-offset 4 c-default-style "linux")
 
+;(defun dont-indent-innamespace ()
+;   (c-set-offset 'innamespace [0]))
+;(add-hook 'c++-mode-hook 'dont-indent-innamespace)
 
 ; Python
 (add-hook 'python-mode-common-hook
