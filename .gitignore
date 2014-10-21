@@ -1,3 +1,4 @@
-# Exclude everything but .el files in .emacs.d/
-emacs.d/*
-!emacs.d/*.el
+# Exclude emacs caches and backups
+emacs/emacs.d/elpa
+emacs/emacs.d/backups
+emacs/emacs.d/auto-save-list
