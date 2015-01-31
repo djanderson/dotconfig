@@ -10,6 +10,8 @@
 
 (defvar my-packages '(better-defaults
                       exec-path-from-shell
+                      ggtags
+                      arduino-mode
                       clojure-mode
                       clojure-test-mode
                       cider
@@ -123,27 +125,42 @@
 ; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+              (ggtags-mode 1))))
+
 (require 'flycheck)
 (flycheck-mode t)
-(cua-selection-mode t)
 
-; Use sh-mode for Dockerfile
+;; Cleanup trailing whitespace before save
+(add-hook 'before-save-hook 'whitespace-cleanup)
+
+;; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
-; C
+;; C
 (setq-default c-basic-offset 4 c-default-style "linux")
+;(setq-default c-basic-offset 2 c-default-style "linux")
 
-;(defun dont-indent-innamespace ()
-;   (c-set-offset 'innamespace [0]))
-;(add-hook 'c++-mode-hook 'dont-indent-innamespace)
+;; easy switching between header and implemetation files
+(add-hook 'c-mode-common-hook
+  (lambda() 
+    (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
-; Python
+;;(defun dont-indent-innamespace ()
+;;   (c-set-offset 'innamespace [0]))
+;;(add-hook 'c++-mode-hook 'dont-indent-innamespace)
+
+;; Python
 (add-hook 'python-mode-common-hook
           '(lambda () (flycheck-mode t)))
 
-; Rust
+;; Rust
 (add-hook 'rust-mode-common-hook
           '(lambda () (flycheck-mode t)))
+
+;; Arduino (http://www.emacswiki.org/emacs-en/ArduinoSupport)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
