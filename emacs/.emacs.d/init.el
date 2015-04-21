@@ -50,7 +50,24 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (wombat))))
+ '(column-number-mode t)
+ '(comint-buffer-maximum-size 10000)
+ '(comint-completion-addsuffix t)
+ '(comint-get-old-input (lambda nil "") t)
+ '(comint-input-ignoredups t)
+ '(comint-input-ring-size 1000)
+ '(comint-move-point-for-output nil)
+ '(comint-prompt-read-only nil)
+ '(comint-scroll-show-maximum-output t)
+ '(comint-scroll-to-bottom-on-input t)
+ '(custom-enabled-themes (quote (wombat)))
+ '(electric-indent-mode t)
+ '(electric-layout-mode t)
+ '(electric-pair-mode t)
+ '(indent-tabs-mode nil)
+ '(line-number-mode t)
+ '(python-shell-interpreter "ipython")
+ '(visible-bell (quote top-bottom)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -72,19 +89,7 @@
 (defvar local-shells
   '("*shell0*" "*shell1*" "*shell2*" "*shell3*"))
 
-(custom-set-variables
- '(comint-scroll-to-bottom-on-input t)  ; always insert at the bottom
- '(comint-scroll-to-bottom-on-output nil) ; always add output at the bottom
- '(comint-scroll-show-maximum-output t) ; scroll to show max possible output
- ;; '(comint-completion-autolist t)     ; show completion list when ambiguous
- '(comint-input-ignoredups t)           ; no duplicates in command history
- '(comint-completion-addsuffix t)       ; insert space/slash after file completion
- '(comint-buffer-maximum-size 10000)    ; max length of the buffer in lines
- '(comint-prompt-read-only nil)         ; if this is t, it breaks shell-command
- '(comint-input-ring-size 1000)         ; max shell history size
- '(comint-get-old-input (lambda () "")) ; what to run when i press enter on a
-                                        ; line above the current prompt
-)
+
 
 ;; truncate buffers continuously
 (add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
@@ -134,18 +139,18 @@
 (flycheck-mode t)
 
 ;; Cleanup trailing whitespace before save
-(add-hook 'before-save-hook 'whitespace-cleanup)
+;(add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
 ;; C
-(setq-default c-basic-offset 4 c-default-style "linux")
-;(setq-default c-basic-offset 2 c-default-style "linux")
+;(setq-default c-basic-offset 4 c-default-style "linux")
+(setq-default c-basic-offset 2 c-default-style "linux")
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
-  (lambda() 
+  (lambda()
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 ;;(defun dont-indent-innamespace ()
@@ -166,16 +171,7 @@
 ; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(custom-set-variables
-  '(electric-indent-mode t)
-  '(electric-pair-mode t)
-  '(electric-layout-mode t))
-
-(custom-set-variables
-  '(line-number-mode t)
-  '(column-number-mode t)
-  '(visible-bell 'top-bottom)
-  '(indent-tabs-mode nil))      ; never use tabs for spacing
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ; turn on pending delete (when a region is selected, typing replaces it)
 (delete-selection-mode t)
