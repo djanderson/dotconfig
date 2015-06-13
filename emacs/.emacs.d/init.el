@@ -145,8 +145,8 @@
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
 ;; C
-;(setq-default c-basic-offset 4 c-default-style "linux")
-(setq-default c-basic-offset 2 c-default-style "linux")
+(setq-default c-basic-offset 4 c-default-style "linux")
+;(setq-default c-basic-offset 2 c-default-style "linux")
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
@@ -172,6 +172,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (global-set-key (kbd "C-x g") 'magit-status)
+
+; https://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
+; (+ 1 2)C-c e -> 3
+(defun fc-eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+(global-set-key (kbd "C-c e") 'fc-eval-and-replace)
 
 ; turn on pending delete (when a region is selected, typing replaces it)
 (delete-selection-mode t)
