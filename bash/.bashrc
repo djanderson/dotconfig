@@ -4,4 +4,3 @@ export EDITOR="emacsclient -t"
 export LSCOLORS=GxFxCxDxBxegedabagaced
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
 export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
-
