@@ -10,6 +10,7 @@
 
 (defvar my-packages '(better-defaults
                       exec-path-from-shell
+                      fill-column-indicator
                       ggtags
                       arduino-mode
                       clojure-mode
@@ -84,6 +85,10 @@
 (require 'exec-path-from-shell)
 (exec-path-from-shell-initialize)
 
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+
 (setenv "PAGER" "cat")
 
 (defvar local-shells
@@ -136,10 +141,15 @@
               (ggtags-mode 1))))
 
 (require 'flycheck)
-(flycheck-mode t)
+
+(require 'fill-column-indicator)
+(setq-default fill-column 78)
+(setq-default fci-rule-column 80)
+(setq-default fci-rule-color "dimgray")
+(setq-default fci-rule-width 2) ;; pixels
 
 ;; Cleanup trailing whitespace before save
-;(add-hook 'before-save-hook 'whitespace-cleanup)
+(add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
@@ -150,20 +160,41 @@
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
-  (lambda()
-    (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+          (lambda()
+            (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (flycheck-mode t)))
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (fci-mode t)))
+
 
 ;;(defun dont-indent-innamespace ()
 ;;   (c-set-offset 'innamespace [0]))
 ;;(add-hook 'c++-mode-hook 'dont-indent-innamespace)
 
 ;; Python
-(add-hook 'python-mode-common-hook
-          '(lambda () (flycheck-mode t)))
+(add-hook 'python-mode-hook
+          (lambda ()
+            (flycheck-mode t)))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (fci-mode t)))
+
 
 ;; Rust
-(add-hook 'rust-mode-common-hook
-          '(lambda () (flycheck-mode t)))
+(add-hook 'rust-mode-hook
+          (lambda ()
+            (flycheck-mode t)))
+
+
+(add-hook 'rust-mode-hook
+          (lambda ()
+            (fci-mode t)))
 
 ;; Arduino (http://www.emacswiki.org/emacs-en/ArduinoSupport)
 
