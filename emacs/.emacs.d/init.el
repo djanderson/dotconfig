@@ -131,6 +131,9 @@
   (let ((inhibit-read-only t))
     (comint-send-input)))
 
+;;Don't echo passwords when communicating with interactive programs:
+(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,7 +188,6 @@
           (lambda ()
             (fci-mode t)))
 
-
 ;; Rust
 (add-hook 'rust-mode-hook
           (lambda ()
@@ -197,6 +199,20 @@
             (fci-mode t)))
 
 ;; Arduino (http://www.emacswiki.org/emacs-en/ArduinoSupport)
+
+(defun source-env ()
+  (interactive)
+  (with-temp-buffer
+    (call-process "bash" nil t nil "-c"
+                  (concat "source "
+                          (read-file-name "Source: " "~/dev/target/setup_env.sh")
+                          "; env | grep PATH"))
+    (goto-char (point-min))
+    (while (not (eobp))
+      (setq process-environment
+            (cons (buffer-substring (point) (line-end-position))
+                  process-environment))
+      (forward-line 1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
@@ -248,3 +264,6 @@
 (global-unset-key [(control z)])
 
 (start-shells)
+
+(provide 'init)
+;;; init.el ends here
