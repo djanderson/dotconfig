@@ -207,6 +207,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (global-set-key (kbd "C-x g") 'magit-status)
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 ; https://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
 ; (+ 1 2)C-c e -> 3
