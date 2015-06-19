@@ -83,7 +83,9 @@
 
 ; inherit PATH var from shell (https://github.com/purcell/exec-path-from-shell)
 (require 'exec-path-from-shell)
-(exec-path-from-shell-initialize)
+(setq exec-path-from-shell-variable '("PATH" "MANPATH" "PYTHONPATH"))
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 (require 'server)
 (unless (server-running-p)
@@ -200,20 +202,6 @@
 
 ;; Arduino (http://www.emacswiki.org/emacs-en/ArduinoSupport)
 
-(defun source-env ()
-  (interactive)
-  (with-temp-buffer
-    (call-process "bash" nil t nil "-c"
-                  (concat "source "
-                          (read-file-name "Source: " "~/dev/target/setup_env.sh")
-                          "; env | grep PATH"))
-    (goto-char (point-min))
-    (while (not (eobp))
-      (setq process-environment
-            (cons (buffer-substring (point) (line-end-position))
-                  process-environment))
-      (forward-line 1))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -233,6 +221,21 @@
            (insert (current-kill 0)))))
 
 (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+
+; Source an env file into process-environment variable
+(defun source-env ()
+  (interactive)
+  (with-temp-buffer
+    (call-process "bash" nil t nil "-c"
+                  (concat "source "
+                          (read-file-name "Source: " "~/dev/target/setup_env.sh")
+                          "; env | grep PATH"))
+    (goto-char (point-min))
+    (while (not (eobp))
+      (setq process-environment
+            (cons (buffer-substring (point) (line-end-position))
+                  process-environment))
+      (forward-line 1))))
 
 ; turn on pending delete (when a region is selected, typing replaces it)
 (delete-selection-mode t)
