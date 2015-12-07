@@ -146,6 +146,8 @@
 
 (require 'flycheck)
 
+(add-hook 'c++-mode-hook (lambda () (setq flycheck-gcc-language-standard "c++11")))
+
 (require 'fill-column-indicator)
 (setq-default fill-column 78)
 (setq-default fci-rule-column 80)
