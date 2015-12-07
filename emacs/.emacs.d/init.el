@@ -14,7 +14,6 @@
                       ggtags
                       arduino-mode
                       clojure-mode
-                      clojure-test-mode
                       cider
                       magit
                       haskell-mode
