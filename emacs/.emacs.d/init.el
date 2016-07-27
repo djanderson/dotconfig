@@ -15,6 +15,7 @@
                       arduino-mode
                       clojure-mode
                       cider
+                      cpputils-cmake
                       magit
                       haskell-mode
                       flycheck
@@ -148,6 +149,11 @@
 
 (add-hook 'c++-mode-hook (lambda () (setq flycheck-gcc-language-standard "c++11")))
 
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (if (derived-mode-p 'c-mode 'c++-mode)
+                (cppcm-reload-all))))
+
 (require 'fill-column-indicator)
 (setq-default fill-column 78)
 (setq-default fci-rule-column 80)
@@ -161,8 +167,8 @@
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
 ;; C
-(setq-default c-basic-offset 4 c-default-style "linux")
-;(setq-default c-basic-offset 2 c-default-style "linux")
+;(setq-default c-basic-offset 4 c-default-style "linux")
+(setq-default c-basic-offset 2 c-default-style "linux")
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
