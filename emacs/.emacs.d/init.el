@@ -30,8 +30,8 @@
 
 (package-initialize)
 (when (not package-archive-contents)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (package-refresh-contents))
+(package-install 'use-package)
 (require 'use-package)
 
 (setq use-package-always-ensure t) ;; auto install all packages
@@ -78,6 +78,10 @@
               (if (derived-mode-p 'c-mode 'c++-mode)
                   (cppcm-reload-all)))))
 
+(use-package scala-mode
+  :interpreter
+  ("scala" . scala-mode))
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode))
@@ -118,7 +122,7 @@
       (tool-bar-mode 0))
   (if (fboundp 'scroll-bar-mode)
       (scroll-bar-mode -1))
-  (tooltip-mode f))
+  (tooltip-mode nil))
 
 ;; avoid garbage collection up to 10M (default is only 400k)
 (setq-default gc-cons-threshold 10000000)
