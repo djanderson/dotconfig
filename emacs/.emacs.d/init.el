@@ -63,9 +63,6 @@
   (add-hook 'python-mode-hook
             (lambda ()
               (fci-mode t)))
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (fci-mode t)))
   (add-hook 'scala-mode-hook
             (lambda ()
               (fci-mode t))))
@@ -80,7 +77,9 @@
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode))
+  :interpreter ("python" . python-mode)
+  :config
+  (setq python-shell-interpreter "ipython3"))
 
 (use-package magit
   :bind ("C-x g" . magit-status)
@@ -118,7 +117,7 @@
       (tool-bar-mode 0))
   (if (fboundp 'scroll-bar-mode)
       (scroll-bar-mode -1))
-  (tooltip-mode f))
+  (tooltip-mode nil))
 
 ;; avoid garbage collection up to 10M (default is only 400k)
 (setq-default gc-cons-threshold 10000000)
