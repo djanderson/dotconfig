@@ -30,8 +30,8 @@
 
 (package-initialize)
 (when (not package-archive-contents)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (package-refresh-contents))
+(package-install 'use-package)
 (require 'use-package)
 
 (setq use-package-always-ensure t) ;; auto install all packages
@@ -74,6 +74,10 @@
             (lambda ()
               (if (derived-mode-p 'c-mode 'c++-mode)
                   (cppcm-reload-all)))))
+
+(use-package scala-mode
+  :interpreter
+  ("scala" . scala-mode))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
