@@ -47,8 +47,7 @@
 (use-package exec-path-from-shell
   :config
   (setq exec-path-from-shell-variable '("PATH" "MANPATH" "PYTHONPATH"))
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize)))
+  (exec-path-from-shell-initialize))
 
 (use-package fill-column-indicator
   :demand
@@ -89,6 +88,23 @@
 
 (use-package go-autocomplete)
 
+(use-package rust-mode
+  :mode ("\\.rs\\'" . rust-mode)
+  :config
+  (add-hook 'before-save-hook 'rust-format-buffer))
+
+(use-package cargo
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
+
+(use-package racer
+  :config
+  ;;(setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path "~/srcbuilds/rust/src")
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode))
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
@@ -118,6 +134,7 @@
   (add-hook 'python-mode-hook
             (lambda ()
               (flycheck-mode t)))
+  (add-hook 'rust-mode-hook #'flycheck-rust-setup)
   (add-hook 'rust-mode-hook
             (lambda ()
               (flycheck-mode t)))
@@ -164,7 +181,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
