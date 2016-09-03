@@ -6,7 +6,7 @@
  create-lockfiles nil
  make-backup-files nil
  scroll-error-top-bottom t
- show-paren-delay 0
+ show-paren-delay 0.5
  sentence-end-double-space nil)
 
 ;; buffer local variables
@@ -65,7 +65,11 @@
               (fci-mode t)))
   (add-hook 'scala-mode-hook
             (lambda ()
+              (fci-mode t)))
+  (add-hook 'go-mode-hook
+            (lambda ()
               (fci-mode t))))
+
 
 ;; parse cmake files to allow smarter syntax checking/autocomplete, etc
 (use-package cpputils-cmake
@@ -79,6 +83,12 @@
   :interpreter
   ("scala" . scala-mode))
 
+(use-package go-mode
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save))
+
+(use-package go-autocomplete)
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
@@ -90,7 +100,14 @@
   :config
   (setq magit-last-seen-setup-instructions "1.4.0"))
 
+(use-package expand-region
+  :commands 'er/expand-region
+  :bind ("C-=" . er/expand-region))
+
 (use-package flycheck
+  :bind
+  ("M-n" . flycheck-next-error)
+  ("M-p" . flycheck-previous-error)
   :config
   (add-hook 'c++-mode-hook
             (lambda ()
@@ -102,6 +119,9 @@
             (lambda ()
               (flycheck-mode t)))
   (add-hook 'rust-mode-hook
+            (lambda ()
+              (flycheck-mode t)))
+  (add-hook 'go-mode-hook
             (lambda ()
               (flycheck-mode t))))
 
@@ -142,6 +162,9 @@
  '(comint-scroll-show-maximum-output t)
  '(comint-scroll-to-bottom-on-input t)
  '(custom-enabled-themes (quote (wombat)))
+ '(package-selected-packages
+   (quote
+    (expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
