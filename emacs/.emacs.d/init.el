@@ -65,6 +65,9 @@
   (add-hook 'scala-mode-hook
             (lambda ()
               (fci-mode t)))
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (fci-mode t)))
   (add-hook 'go-mode-hook
             (lambda ()
               (fci-mode t))))
