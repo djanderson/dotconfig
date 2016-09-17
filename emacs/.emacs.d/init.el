@@ -100,6 +100,8 @@
   :config
   (add-hook 'rust-mode-hook 'cargo-minor-mode))
 
+(use-package yaml-mode)
+
 (use-package racer
   :config
   ;;(setq racer-cmd "~/.cargo/bin/racer")
@@ -184,7 +186,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -203,43 +205,15 @@
 (defvar local-shells
   '("*shell0*" "*shell1*" "*shell2*" "*shell3*"))
 
-;; truncate buffers continuously
-(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
-
-;; interpret and use ansi color codes in shell buffers
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-(defun make-shell-output-read-only (text)
-  "Add output-filter-functions to make stdout read only in my shells."
-  (if (member (buffer-name) local-shells)
-      (let ((inhibit-read-only t)
-            (output-end (process-mark (get-buffer-process (current-buffer)))))
-        (put-text-property comint-last-output-start output-end 'read-only t))))
-(add-hook 'comint-output-filter-functions 'make-shell-output-read-only)
-
-(defun set-scroll-conservatively ()
-  "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell."
-  (set (make-local-variable 'scroll-conservatively) 20))
-(add-hook 'shell-mode-hook 'set-scroll-conservatively)
-
 ;; run a few shells.
 (defun start-shells ()
-  (interactive)
-  (let ((default-directory "~")
-        ;; trick comint into thinking the current window is 80 columns, since it
-        ;; uses that to set the COLUMNS env var. otherwise it uses whatever the
-        ;; current window's width is, which could be anything.
-        (window-width (lambda () 80)))
-    (mapcar 'shell local-shells)))
+  (mapcar 'shell local-shells))
 
-(defun fix-shell ()
-  "Sometimes the input area of a shell buffer goes read only. This fixes that."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (comint-send-input)))
-
-;; Don't echo passwords when communicating with interactive programs:
-(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+;;(defun fix-shell ()
+;;  "Sometimes the input area of a shell buffer goes read only. fix that."
+;;  (interactive)
+;;  (let ((inhibit-read-only t))
+;;    (comint-send-input)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming
