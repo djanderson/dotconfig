@@ -6,7 +6,7 @@
  create-lockfiles nil
  make-backup-files nil
  scroll-error-top-bottom t
- show-paren-delay 0
+ show-paren-delay 0.5
  sentence-end-double-space nil)
 
 ;; buffer local variables
@@ -53,8 +53,7 @@
 (use-package exec-path-from-shell
   :config
   (setq exec-path-from-shell-variable '("PATH" "MANPATH" "PYTHONPATH"))
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize)))
+  (exec-path-from-shell-initialize))
 
 (use-package fill-column-indicator
   :demand
@@ -71,7 +70,14 @@
               (fci-mode t)))
   (add-hook 'scala-mode-hook
             (lambda ()
+              (fci-mode t)))
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (fci-mode t)))
+  (add-hook 'go-mode-hook
+            (lambda ()
               (fci-mode t))))
+
 
 ;; parse cmake files to allow smarter syntax checking/autocomplete, etc
 (use-package cpputils-cmake
@@ -97,6 +103,31 @@
             (ensime-mode)
             (scala-mode:goto-start-of-code))))
 
+(use-package go-mode
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save))
+
+(use-package go-autocomplete)
+
+(use-package rust-mode
+  :mode ("\\.rs\\'" . rust-mode)
+  :config
+  (add-hook 'before-save-hook 'rust-format-buffer))
+
+(use-package cargo
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
+
+(use-package yaml-mode)
+
+(use-package racer
+  :config
+  ;;(setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path "~/srcbuilds/rust/src")
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode))
+
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
@@ -110,7 +141,14 @@
   :bind (("C-x C-g g" . magit-status)
          ("C-x C-g b" . magit-blame)))
 
+(use-package expand-region
+  :commands 'er/expand-region
+  :bind ("C-=" . er/expand-region))
+
 (use-package flycheck
+  :bind
+  ("M-n" . flycheck-next-error)
+  ("M-p" . flycheck-previous-error)
   :config
   (add-hook 'c++-mode-hook
             (lambda ()
@@ -121,7 +159,11 @@
   (add-hook 'python-mode-hook
             (lambda ()
               (flycheck-mode t)))
+  (add-hook 'rust-mode-hook #'flycheck-rust-setup)
   (add-hook 'rust-mode-hook
+            (lambda ()
+              (flycheck-mode t)))
+  (add-hook 'go-mode-hook
             (lambda ()
               (flycheck-mode t))))
 
@@ -168,7 +210,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (flycheck-cask expand-region projectile undo-tree use-package toml-mode rust-mode magit haskell-mode ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake cider better-defaults arduino-mode)))
+    (yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -187,43 +229,15 @@
 (defvar local-shells
   '("*shell0*" "*shell1*" "*shell2*" "*shell3*"))
 
-;; truncate buffers continuously
-(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
-
-;; interpret and use ansi color codes in shell buffers
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-(defun make-shell-output-read-only (text)
-  "Add output-filter-functions to make stdout read only in my shells."
-  (if (member (buffer-name) local-shells)
-      (let ((inhibit-read-only t)
-            (output-end (process-mark (get-buffer-process (current-buffer)))))
-        (put-text-property comint-last-output-start output-end 'read-only t))))
-(add-hook 'comint-output-filter-functions 'make-shell-output-read-only)
-
-(defun set-scroll-conservatively ()
-  "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell."
-  (set (make-local-variable 'scroll-conservatively) 20))
-(add-hook 'shell-mode-hook 'set-scroll-conservatively)
-
 ;; run a few shells.
 (defun start-shells ()
-  (interactive)
-  (let ((default-directory "~")
-        ;; trick comint into thinking the current window is 80 columns, since it
-        ;; uses that to set the COLUMNS env var. otherwise it uses whatever the
-        ;; current window's width is, which could be anything.
-        (window-width (lambda () 80)))
-    (mapcar 'shell local-shells)))
+  (mapcar 'shell local-shells))
 
-(defun fix-shell ()
-  "Sometimes the input area of a shell buffer goes read only. This fixes that."
-  (interactive)
-  (let ((inhibit-read-only t))
-    (comint-send-input)))
-
-;; Don't echo passwords when communicating with interactive programs:
-(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+;;(defun fix-shell ()
+;;  "Sometimes the input area of a shell buffer goes read only. fix that."
+;;  (interactive)
+;;  (let ((inhibit-read-only t))
+;;    (comint-send-input)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming
