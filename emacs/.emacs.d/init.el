@@ -36,12 +36,18 @@
 
 (setq use-package-always-ensure t) ;; auto install all packages
 
+(use-package better-defaults
+  :demand)
+
 ;; package settings
 (use-package ensime
   :pin melpa-stable)
 
-(use-package better-defaults
-  :demand)
+(use-package expand-region
+  :commands 'er/expand-region
+  :bind ("C-=" . er/expand-region))
+
+(require 'ensime-expand-region)
 
 ;; inherit PATH var from shell (https://github.com/purcell/exec-path-from-shell)
 (use-package exec-path-from-shell
@@ -84,11 +90,22 @@
               (if (derived-mode-p 'c-mode 'c++-mode)
                   (cppcm-reload-all)))))
 
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :commands yas-minor-mode
+  :config (yas-reload-all))
+
 (use-package scala-mode
   :interpreter
   ("scala" . scala-mode)
   :config
-  (add-hook 'scala-mode-hook 'subword-mode))
+  (add-hook 'scala-mode-hook
+          (lambda ()
+            (yas-minor-mode)
+            (company-mode)
+            (ensime-mode)
+            (scala-mode:goto-start-of-code)
+            (subword-mode))))
 
 (use-package go-mode
   :config
@@ -123,9 +140,11 @@
   (setq python-shell-interpreter "ipython3"))
 
 (use-package magit
-  :bind ("C-x g" . magit-status)
-  :config
-  (setq magit-last-seen-setup-instructions "1.4.0"))
+  :commands magit-status magit-blame
+  :init (setq
+         magit-revert-buffers nil)
+  :bind (("C-x C-g g" . magit-status)
+         ("C-x C-g b" . magit-blame)))
 
 (use-package expand-region
   :commands 'er/expand-region
@@ -157,6 +176,10 @@
               (flycheck-mode t))))
 
 (use-package flycheck-pyflakes)
+
+(use-package flycheck-cask
+  :commands flycheck-cask-setup
+  :config (add-hook 'emacs-lisp-mode-hook (flycheck-cask-setup)))
 
 ;; make mac key placement match PC
 (setq mac-option-key-is-meta nil)
