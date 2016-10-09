@@ -70,6 +70,9 @@
               (fci-mode t)))
   (add-hook 'go-mode-hook
             (lambda ()
+              (fci-mode t)))
+  (add-hook 'octave-mode-hook
+            (lambda ()
               (fci-mode t))))
 
 
@@ -83,11 +86,14 @@
 
 (use-package scala-mode
   :interpreter
-  ("scala" . scala-mode))
+  ("scala" . scala-mode)
+  :config
+  (add-hook 'scala-mode-hook 'subword-mode))
 
 (use-package go-mode
   :config
-  (add-hook 'before-save-hook 'gofmt-before-save))
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook 'subword-mode))
 
 (use-package go-autocomplete)
 
@@ -144,6 +150,9 @@
             (lambda ()
               (flycheck-mode t)))
   (add-hook 'go-mode-hook
+            (lambda ()
+              (flycheck-mode t)))
+  (add-hook 'octave-mode-hook
             (lambda ()
               (flycheck-mode t))))
 
@@ -236,6 +245,9 @@
 ;; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
 
+;; Use octave-mode for Matlab .m files
+(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+
 ;; C
 ;;(setq-default c-basic-offset 4 c-default-style "k&r")
 (setq-default c-basic-offset 2 c-default-style "k&r")
@@ -287,7 +299,6 @@
 
 ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-
 
 ;; allow narrowing
 (put 'narrow-to-region 'disabled nil)
