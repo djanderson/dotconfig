@@ -137,11 +137,6 @@
  '(company-tooltip-common-selection ((((type x)) (:inherit company-tooltip-selection :weight bold)) (t (:inherit company-tooltip-selection))))
  '(company-tooltip-selection ((t (:background "steelblue" :foreground "white")))))
 
-(use-package rust-mode
-  ;;:mode ("\\.rs\\'" . rust-mode)
-  :config
-  (add-hook 'before-save-hook 'rust-format-buffer))
-
 (use-package cargo
   :config
   (add-hook 'rust-mode-hook 'cargo-minor-mode))
@@ -155,12 +150,6 @@
   (add-hook 'rust-mode-hook #'racer-mode)
   (add-hook 'racer-mode-hook #'eldoc-mode)
   (add-hook 'racer-mode-hook #'company-mode))
-
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode)
-  :config
-  (setq python-shell-interpreter "ipython3"))
 
 (use-package magit
   :commands magit-status magit-blame
@@ -184,9 +173,6 @@
   (add-hook 'c-mode-common-hook
             (lambda ()
               (flycheck-mode t)))
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (flycheck-mode t)))
   (add-hook 'rust-mode-hook #'flycheck-rust-setup)
   (add-hook 'rust-mode-hook
             (lambda ()
@@ -198,7 +184,14 @@
             (lambda ()
               (flycheck-mode t))))
 
-(use-package flycheck-pyflakes)
+(use-package elpy
+  :bind
+  ("M-n" . elpy-flymake-next-error)
+  ("M-p" . elpy-flymake-previous-error)
+  :config
+  (elpy-enable)
+  (setq elpy-rpc-python-command "python3")
+  (elpy-use-ipython "ipython3"))
 
 (use-package flycheck-cask
   :commands flycheck-cask-setup
@@ -241,7 +234,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 
 
