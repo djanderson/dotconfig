@@ -39,22 +39,6 @@
 (use-package better-defaults
   :demand)
 
-;; package settings
-(use-package ensime
-  :pin melpa-stable)
-
-(use-package expand-region
-  :commands 'er/expand-region
-  :bind ("C-=" . er/expand-region))
-
-(require 'ensime-expand-region)
-
-;; inherit PATH var from shell (https://github.com/purcell/exec-path-from-shell)
-(use-package exec-path-from-shell
-  :config
-  (setq exec-path-from-shell-variable '("PATH" "MANPATH" "PYTHONPATH"))
-  (exec-path-from-shell-initialize))
-
 (use-package fill-column-indicator
   :demand
   :config
@@ -90,23 +74,6 @@
               (if (derived-mode-p 'c-mode 'c++-mode)
                   (cppcm-reload-all)))))
 
-(use-package yasnippet
-  :diminish yas-minor-mode
-  :commands yas-minor-mode
-  :config (yas-reload-all))
-
-(use-package scala-mode
-  :interpreter
-  ("scala" . scala-mode)
-  :config
-  (add-hook 'scala-mode-hook
-          (lambda ()
-            (yas-minor-mode)
-            (company-mode)
-            (ensime-mode)
-            (scala-mode:goto-start-of-code)
-            (subword-mode))))
-
 (use-package go-mode
   :bind
   ("M-." . godef-jump)
@@ -137,19 +104,7 @@
  '(company-tooltip-common-selection ((((type x)) (:inherit company-tooltip-selection :weight bold)) (t (:inherit company-tooltip-selection))))
  '(company-tooltip-selection ((t (:background "steelblue" :foreground "white")))))
 
-(use-package cargo
-  :config
-  (add-hook 'rust-mode-hook 'cargo-minor-mode))
-
 (use-package yaml-mode)
-
-(use-package racer
-  :config
-  ;;(setq racer-cmd "~/.cargo/bin/racer")
-  (setq racer-rust-src-path "~/srcbuilds/rust/src")
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode))
 
 (use-package magit
   :commands magit-status magit-blame
@@ -171,10 +126,6 @@
             (lambda ()
               (setq flycheck-gcc-language-standard "c++11")))
   (add-hook 'c-mode-common-hook
-            (lambda ()
-              (flycheck-mode t)))
-  (add-hook 'rust-mode-hook #'flycheck-rust-setup)
-  (add-hook 'rust-mode-hook
             (lambda ()
               (flycheck-mode t)))
   (add-hook 'go-mode-hook
@@ -213,9 +164,6 @@
       (scroll-bar-mode -1))
   (tooltip-mode nil))
 
-;; avoid garbage collection up to 10M (default is only 400k)
-(setq-default gc-cons-threshold 10000000)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -225,16 +173,17 @@
  '(comint-buffer-maximum-size 10000)
  '(comint-completion-addsuffix t)
  '(comint-get-old-input (lambda nil "") t)
+ '(comint-highlight-prompt nil)
  '(comint-input-ignoredups t)
  '(comint-input-ring-size 1000)
- '(comint-move-point-for-output nil)
- '(comint-prompt-read-only nil)
+ '(comint-move-point-for-output other)
+ '(comint-prompt-read-only t)
  '(comint-scroll-show-maximum-output t)
  '(comint-scroll-to-bottom-on-input t)
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (elpy company-go yaml-mode company dash epl flycheck git-commit magit-popup with-editor expand-region use-package toml-mode spinner queue package-utils magit ggtags flycheck-pyflakes fill-column-indicator edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 
 
@@ -252,26 +201,9 @@
 (defun start-shells ()
   (mapcar 'shell local-shells))
 
-;;(defun fix-shell ()
-;;  "Sometimes the input area of a shell buffer goes read only. fix that."
-;;  (interactive)
-;;  (let ((inhibit-read-only t))
-;;    (comint-send-input)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(global-prettify-symbols-mode +1)
-
-(add-hook 'scala-mode-hook
-          (lambda ()
-            (setq prettify-symbols-alist scala-prettify-symbols-alist)))
-
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-              (ggtags-mode 1))))
 
 ;; Cleanup trailing whitespace before save
 (add-hook 'before-save-hook 'whitespace-cleanup)
@@ -323,16 +255,6 @@
 
 ;; turn off "yes" / "no" full word prompts
 (fset 'yes-or-no-p 'y-or-n-p)
-
-;; use utf-8! details:
-;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-
-;; Treat clipboard input as UTF-8 string first; compound text next, etc.
-(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 ;; allow narrowing
 (put 'narrow-to-region 'disabled nil)

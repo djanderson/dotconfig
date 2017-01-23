@@ -1,5 +1,8 @@
 # Exclude emacs caches and backups
-emacs/emacs.d/elpa
-emacs/emacs.d/backups
-emacs/emacs.d/auto-save-list
-emacs/emacs.d/places
+emacs/.emacs.d/elpa
+emacs/.emacs.d/backups
+emacs/.emacs.d/auto-save-list
+emacs/.emacs.d/places
+emacs/.emacs.d/ido.last
+emacs/.emacs.d/session*
+emacs/.emacs.d/tramp
