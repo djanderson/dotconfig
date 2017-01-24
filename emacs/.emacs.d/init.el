@@ -135,6 +135,13 @@
             (lambda ()
               (flycheck-mode t))))
 
+(use-package multiple-cursors
+  :bind
+  ("C-S-c C-S-c" . mc/edit-lines)
+  ("C->" . mc/mark-next-like-this)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C-c C-<" . mc/mark-all-like-this))
+
 (use-package elpy
   :bind
   ("M-n" . elpy-flymake-next-error)
@@ -173,17 +180,16 @@
  '(comint-buffer-maximum-size 10000)
  '(comint-completion-addsuffix t)
  '(comint-get-old-input (lambda nil "") t)
- '(comint-highlight-prompt nil)
  '(comint-input-ignoredups t)
  '(comint-input-ring-size 1000)
- '(comint-move-point-for-output other)
- '(comint-prompt-read-only t)
+ '(comint-move-point-for-output nil)
+ '(comint-prompt-read-only nil)
  '(comint-scroll-show-maximum-output t)
  '(comint-scroll-to-bottom-on-input t)
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (elpy company-go yaml-mode company dash epl flycheck git-commit magit-popup with-editor expand-region use-package toml-mode spinner queue package-utils magit ggtags flycheck-pyflakes fill-column-indicator edit-server cpputils-cmake better-defaults)))
+    (multiple-cursors paredit elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 
 
@@ -200,6 +206,8 @@
 ;; run a few shells.
 (defun start-shells ()
   (mapcar 'shell local-shells))
+
+(add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming
