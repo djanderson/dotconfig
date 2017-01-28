@@ -254,6 +254,7 @@
            (insert (current-kill 0)))))
 
 (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
+(global-set-key (kbd "C-M-j") 'join-line)
 
 ;; turn on pending delete (when a region is selected, typing replaces it)
 (delete-selection-mode t)
