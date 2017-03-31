@@ -102,7 +102,8 @@
  '(company-tooltip ((t (:background "lightgray" :foreground "black"))))
  '(company-tooltip-common ((((type x)) (:inherit company-tooltip :weight bold)) (t (:inherit company-tooltip))))
  '(company-tooltip-common-selection ((((type x)) (:inherit company-tooltip-selection :weight bold)) (t (:inherit company-tooltip-selection))))
- '(company-tooltip-selection ((t (:background "steelblue" :foreground "white")))))
+ '(company-tooltip-selection ((t (:background "steelblue" :foreground "white"))))
+ '(hl-line ((t (:background "gray20")))))
 
 (use-package yaml-mode)
 
@@ -192,7 +193,18 @@
     (multiple-cursors paredit elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 
+(global-hl-line-mode 1)
 
+(set-face-attribute  'mode-line
+                 nil
+                 :foreground "gray100"
+                 :background "gray30"
+                 :box '(:line-width 1 :style released-button))
+(set-face-attribute  'mode-line-inactive
+                 nil
+                 :foreground "gray30"
+                 :background "gray20"
+                 :box '(:line-width 1 :style released-button))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shells
