@@ -65,6 +65,21 @@
             (lambda ()
               (fci-mode t))))
 
+;; compat for company-mode and fci-mode
+;; https://github.com/company-mode/company-mode/issues/180
+(defvar-local company-fci-mode-on-p nil)
+
+(defun company-turn-off-fci (&rest ignore)
+  (when (boundp 'fci-mode)
+    (setq company-fci-mode-on-p fci-mode)
+    (when fci-mode (fci-mode -1))))
+
+(defun company-maybe-turn-on-fci (&rest ignore)
+  (when company-fci-mode-on-p (fci-mode 1)))
+
+(add-hook 'company-completion-started-hook 'company-turn-off-fci)
+(add-hook 'company-completion-finished-hook 'company-maybe-turn-on-fci)
+(add-hook 'company-completion-cancelled-hook 'company-maybe-turn-on-fci)
 
 ;; parse cmake files to allow smarter syntax checking/autocomplete, etc
 (use-package cpputils-cmake
@@ -81,17 +96,6 @@
   (add-hook 'before-save-hook 'gofmt-before-save)
   (add-hook 'go-mode-hook 'subword-mode))
 
-(use-package company-go
-  :config
-  (add-hook 'go-mode-hook (lambda ()
-                            (set (make-local-variable 'company-backends) '(company-go))
-                            (company-mode))))
-
-(setq company-tooltip-limit 20)                      ; bigger popup window
-(setq company-idle-delay .3)                         ; decrease delay before autocompletion popup shows
-(setq company-echo-delay 0)                          ; remove annoying blinking
-(setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -99,6 +103,8 @@
  ;; If there is more than one, they won't work right.
  '(company-preview ((t (:foreground "darkgray" :underline t))))
  '(company-preview-common ((t (:inherit company-preview))))
+ '(company-scrollbar-bg ((t (:background "RoyalBlue4"))))
+ '(company-scrollbar-fg ((t (:background "goldenrod"))))
  '(company-tooltip ((t (:background "lightgray" :foreground "black"))))
  '(company-tooltip-common ((((type x)) (:inherit company-tooltip :weight bold)) (t (:inherit company-tooltip))))
  '(company-tooltip-common-selection ((((type x)) (:inherit company-tooltip-selection :weight bold)) (t (:inherit company-tooltip-selection))))
@@ -185,7 +191,23 @@
  '(comint-prompt-read-only nil)
  '(comint-scroll-show-maximum-output t)
  '(comint-scroll-to-bottom-on-input t)
+ '(company-echo-truncate-lines t)
+ '(company-frontends
+   (quote
+    (company-preview-if-just-one-frontend company-echo-metadata-frontend company-pseudo-tooltip-unless-just-one-frontend)))
+ '(company-show-numbers t)
+ '(company-tooltip-align-annotations f)
  '(custom-enabled-themes (quote (wombat)))
+ '(elpy-company-post-completion-function (quote elpy-company-post-complete-parens))
+ '(elpy-modules
+   (quote
+    (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-highlight-indentation elpy-module-yasnippet elpy-module-django elpy-module-sane-defaults)))
+ '(elpy-project-ignored-directories
+   (quote
+    (".bzr" "CVS" ".git" ".hg" ".svn" ".tox" "build" "dist" ".cask" ".eggs")))
+ '(elpy-test-discover-runner-command (quote ("python3" "-m" "pytest")))
+ '(elpy-test-runner (quote elpy-test-pytest-runner))
+ '(global-company-mode t)
  '(package-selected-packages
    (quote
     (paredit elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
