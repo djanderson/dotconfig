@@ -129,6 +129,9 @@
   (add-hook 'c-mode-common-hook
             (lambda ()
               (flycheck-mode t)))
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (flycheck-mode t)))
   (add-hook 'go-mode-hook
             (lambda ()
               (flycheck-mode t)))
@@ -136,21 +139,16 @@
             (lambda ()
               (flycheck-mode t))))
 
-(use-package multiple-cursors
-  :bind
-  ("C-S-c C-S-c" . mc/edit-lines)
-  ("C->" . mc/mark-next-like-this)
-  ("C-<" . mc/mark-previous-like-this)
-  ("C-c C-<" . mc/mark-all-like-this))
-
 (use-package elpy
-  :bind
-  ("M-n" . elpy-flymake-next-error)
-  ("M-p" . elpy-flymake-previous-error)
   :config
   (elpy-enable)
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (elpy-mode t)))
   (setq elpy-rpc-python-command "python3")
-  (elpy-use-ipython "ipython3"))
+  (elpy-use-ipython "ipython3")
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
 
 (use-package flycheck-cask
   :commands flycheck-cask-setup
@@ -190,7 +188,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (multiple-cursors paredit elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (paredit elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 
 (global-hl-line-mode 1)
