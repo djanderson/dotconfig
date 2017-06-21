@@ -18,7 +18,6 @@
 
 ;; modes
 (electric-indent-mode t)
-(electric-layout-mode t)
 (electric-pair-mode t)
 (line-number-mode t)
 (show-paren-mode t)
