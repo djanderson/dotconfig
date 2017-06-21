@@ -13,7 +13,8 @@
 (setq-default
  indent-tabs-mode nil
  tab-width 4
- c-basic-offset 4)
+ c-basic-offset 4
+ fill-column 79)
 
 ;; modes
 (electric-indent-mode t)
@@ -198,7 +199,7 @@
  '(company-show-numbers t)
  '(company-tooltip-align-annotations f)
  '(custom-enabled-themes (quote (wombat)))
- '(elpy-company-post-completion-function (quote elpy-company-post-complete-parens))
+ '(elpy-company-post-completion-function (quote ignore))
  '(elpy-modules
    (quote
     (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-highlight-indentation elpy-module-yasnippet elpy-module-django elpy-module-sane-defaults)))
@@ -210,7 +211,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (paredit elpy company-go yaml-mode racer racer-mode cargo-mode company dash epl flycheck git-commit magit-popup sbt-mode scala-mode with-editor yasnippet expand-region use-package toml-mode spinner rust-mode queue package-utils magit ggtags flycheck-rust flycheck-pyflakes fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (rjsx-mode js2-mode paredit elpy company-go racer racer-mode cargo-mode company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags flycheck-rust fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(visible-bell (quote top-bottom)))
 
 (global-hl-line-mode 1)
