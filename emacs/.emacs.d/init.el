@@ -156,6 +156,10 @@
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
+(with-eval-after-load 'rjsx
+  (define-key rjsx-mode-map "<" nil)
+  (define-key rjsx-mode-map (kbd "C-d") nil))
+
 (use-package flycheck-cask
   :commands flycheck-cask-setup
   :config (add-hook 'emacs-lisp-mode-hook (flycheck-cask-setup)))
