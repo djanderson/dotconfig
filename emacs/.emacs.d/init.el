@@ -212,6 +212,7 @@
  '(elpy-test-discover-runner-command (quote ("python3" "-m" "pytest")))
  '(elpy-test-runner (quote elpy-test-pytest-runner))
  '(global-company-mode t)
+ '(subword-mode t)
  '(package-selected-packages
    (quote
     (rjsx-mode js2-mode paredit elpy company-go racer racer-mode cargo-mode company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags flycheck-rust fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
