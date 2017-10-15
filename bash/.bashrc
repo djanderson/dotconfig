@@ -7,8 +7,8 @@ source ~/.bash_exports
 alias sudo='sudo '
 
 if [ -n "$INSIDE_EMACS" ]; then
-    export TERM=xterm-256color
-    alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
+    export TERM=rxvt-unicode-256color
+    #alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
 fi
 
 # ~/.bashrc: executed by bash(1) for non-login shells.

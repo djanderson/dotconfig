@@ -156,6 +156,18 @@
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
+(use-package rust-mode
+  :config
+  ;; set to t when rustfmt supports vertically aligning matches/enums
+  (setq rust-format-on-save nil)
+  (setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path "~/src/rust/src")
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'rust-mode-hook #'flycheck-mode)
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode))
+
 (with-eval-after-load 'rjsx
   (define-key rjsx-mode-map "<" nil)
   (define-key rjsx-mode-map (kbd "C-d") nil))
@@ -212,10 +224,10 @@
  '(elpy-test-discover-runner-command (quote ("python3" "-m" "pytest")))
  '(elpy-test-runner (quote elpy-test-pytest-runner))
  '(global-company-mode t)
- '(subword-mode t)
  '(package-selected-packages
    (quote
-    (rjsx-mode js2-mode paredit elpy company-go racer racer-mode cargo-mode company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags flycheck-rust fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (yaml-mode magit flymake-rust company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer racer-mode cargo-mode company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags flycheck-rust fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+ '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
 (global-hl-line-mode 1)
@@ -310,6 +322,11 @@
   :init
   (add-hook 'after-init-hook 'server-start t)
   (add-hook 'after-init-hook 'edit-server-start t))
+
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
