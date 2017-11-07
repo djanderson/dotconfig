@@ -25,8 +25,9 @@
 ;; setup the package manager
 (require 'package)
 (setq
- package-archives '(("melpa" . "http://melpa.org/packages/")
-                    ("melpa-stable" . "http://stable.melpa.org/packages/")))
+ package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                    ("melpa" . "https://melpa.org/packages/")
+                    ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (package-initialize)
 (when (not package-archive-contents)
@@ -227,7 +228,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (yaml-mode magit flymake-rust company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer racer-mode cargo-mode company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags flycheck-rust fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
