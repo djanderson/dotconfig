@@ -157,6 +157,8 @@
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
+(use-package cargo)
+
 (use-package rust-mode
   :config
   ;; set to t when rustfmt supports vertically aligning matches/enums
