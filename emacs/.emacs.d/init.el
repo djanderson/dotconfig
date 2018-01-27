@@ -228,7 +228,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
@@ -291,6 +291,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
+(defadvice ido-find-file (after find-file-sudo activate)
+  "Find file as root if necessary."
+  (unless (and buffer-file-name
+               (file-writable-p buffer-file-name))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
 ;; https://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
 ;; (+ 1 2)C-c e -> 3
