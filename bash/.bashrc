@@ -1,4 +1,4 @@
-# pull site-specific path manipulations from here
+	# pull site-specific path manipulations from here
 source ~/.bash_exports
 
 # this allow the 'apt' alias below to be expanded in sudo
@@ -128,3 +128,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Make caps another control
+setxkbmap -option ctrl:nocaps
