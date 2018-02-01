@@ -1,4 +1,4 @@
-	# pull site-specific path manipulations from here
+# pull site-specific path manipulations from here
 source ~/.bash_exports
 
 # this allow the 'apt' alias below to be expanded in sudo
@@ -8,7 +8,7 @@ alias sudo='sudo '
 
 if [ -n "$INSIDE_EMACS" ]; then
     export TERM=rxvt-unicode-256color
-    #alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
+    alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
 fi
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
