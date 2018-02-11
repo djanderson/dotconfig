@@ -153,7 +153,6 @@
             (lambda ()
               (elpy-mode t)))
   (setq elpy-rpc-python-command "python3")
-  (elpy-use-ipython "ipython3")
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
@@ -237,15 +236,15 @@
 (global-hl-line-mode 1)
 
 (set-face-attribute  'mode-line
-                 nil
-                 :foreground "gray100"
-                 :background "gray30"
-                 :box '(:line-width 1 :style released-button))
+                     nil
+                     :foreground "gray100"
+                     :background "gray30"
+                     :box '(:line-width 1 :style released-button))
 (set-face-attribute  'mode-line-inactive
-                 nil
-                 :foreground "gray30"
-                 :background "gray20"
-                 :box '(:line-width 1 :style released-button))
+                     nil
+                     :foreground "gray30"
+                     :background "gray20"
+                     :box '(:line-width 1 :style released-button))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shells
@@ -276,8 +275,16 @@
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
 ;; C
-;;(setq-default c-basic-offset 4 c-default-style "k&r")
-(setq-default c-basic-offset 2 c-default-style "k&r")
+
+;; linux hacking:
+;; (setq-default
+;;  indent-tabs-mode 1
+;;  tab-width 8
+;;  c-basic-offset 8
+;;  c-default-style "linux"
+;;  fill-column 79)
+
+(setq-default c-basic-offset 4 c-default-style "k&r")
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
