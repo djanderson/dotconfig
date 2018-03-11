@@ -90,13 +90,6 @@
               (if (derived-mode-p 'c-mode 'c++-mode)
                   (cppcm-reload-all)))))
 
-(use-package go-mode
-  :bind
-  ("M-." . godef-jump)
-  :config
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  (add-hook 'go-mode-hook 'subword-mode))
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -290,6 +283,13 @@
 (add-hook 'c-mode-common-hook
           (lambda ()
             (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+
+(use-package ggtags
+  :config
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                (ggtags-mode 1)))))
 
 ;;(defun dont-indent-innamespace ()
 ;;   (c-set-offset 'innamespace [0]))
