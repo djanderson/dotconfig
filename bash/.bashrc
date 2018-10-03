@@ -8,7 +8,7 @@ alias sudo='sudo '
 
 if [ -n "$INSIDE_EMACS" ]; then
     export TERM=rxvt-unicode-256color
-    #alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
+    alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
 fi
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
@@ -128,3 +128,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Make caps another control
+setxkbmap -option ctrl:nocaps

@@ -90,13 +90,6 @@
               (if (derived-mode-p 'c-mode 'c++-mode)
                   (cppcm-reload-all)))))
 
-(use-package go-mode
-  :bind
-  ("M-." . godef-jump)
-  :config
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  (add-hook 'go-mode-hook 'subword-mode))
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -229,22 +222,22 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
 (global-hl-line-mode 1)
 
 (set-face-attribute  'mode-line
-                 nil
-                 :foreground "gray100"
-                 :background "gray30"
-                 :box '(:line-width 1 :style released-button))
+                     nil
+                     :foreground "gray100"
+                     :background "gray30"
+                     :box '(:line-width 1 :style released-button))
 (set-face-attribute  'mode-line-inactive
-                 nil
-                 :foreground "gray30"
-                 :background "gray20"
-                 :box '(:line-width 1 :style released-button))
+                     nil
+                     :foreground "gray30"
+                     :background "gray20"
+                     :box '(:line-width 1 :style released-button))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shells
@@ -275,13 +268,28 @@
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
 ;; C
+
+;; linux hacking:
+;; (setq-default
+;;  indent-tabs-mode 1
+;;  tab-width 8
+;;  c-basic-offset 8
+;;  c-default-style "linux"
+;;  fill-column 79)
+
 (setq-default c-basic-offset 4 c-default-style "k&r")
-;;(setq-default c-basic-offset 2 c-default-style "k&r")
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
           (lambda ()
             (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+
+(use-package ggtags
+  :config
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                (ggtags-mode 1)))))
 
 ;;(defun dont-indent-innamespace ()
 ;;   (c-set-offset 'innamespace [0]))
@@ -292,6 +300,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
+(defadvice ido-find-file (after find-file-sudo activate)
+  "Find file as root if necessary."
+  (unless (and buffer-file-name
+               (file-writable-p buffer-file-name))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
 ;; https://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
 ;; (+ 1 2)C-c e -> 3
