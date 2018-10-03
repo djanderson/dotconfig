@@ -153,7 +153,6 @@
             (lambda ()
               (elpy-mode t)))
   (setq elpy-rpc-python-command "python3")
-  (elpy-use-ipython "ipython3")
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
@@ -276,8 +275,8 @@
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
 ;; C
-;;(setq-default c-basic-offset 4 c-default-style "k&r")
-(setq-default c-basic-offset 2 c-default-style "k&r")
+(setq-default c-basic-offset 4 c-default-style "k&r")
+;;(setq-default c-basic-offset 2 c-default-style "k&r")
 
 ;; easy switching between header and implemetation files
 (add-hook 'c-mode-common-hook
