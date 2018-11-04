@@ -6,7 +6,7 @@
  create-lockfiles nil
  make-backup-files nil
  scroll-error-top-bottom t
- show-paren-delay 0.5
+ show-paren-delay 0
  sentence-end-double-space nil)
 
 ;; buffer local variables
@@ -63,6 +63,9 @@
             (lambda ()
               (fci-mode t)))
   (add-hook 'octave-mode-hook
+            (lambda ()
+              (fci-mode t)))
+  (add-hook 'clojure-mode-hook
             (lambda ()
               (fci-mode t))))
 
@@ -222,7 +225,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (helm-gtags helm ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
@@ -277,19 +280,54 @@
 ;;  c-default-style "linux"
 ;;  fill-column 79)
 
-(setq-default c-basic-offset 4 c-default-style "k&r")
+(add-hook 'c-mode-hook
+          (lambda () (setq-default
+                      c-basic-offset 4
+                      c-default-style "k&r"
+                      comment-style 'extra-line)))
 
-;; easy switching between header and implemetation files
+;; easy switching between header and implementation files
 (add-hook 'c-mode-common-hook
           (lambda ()
             (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
-(use-package ggtags
+(use-package helm
   :config
+  (require 'helm-config)
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  (setq helm-split-window-in-side-p t  ; open helm buffer inside current buffer
+        helm-autoresize-max-height 0
+        helm-autoresize-min-height 30)
+  (helm-autoresize-mode 1)
+  (helm-mode 1))
+
+(use-package helm-gtags
+  :config
+  (setq helm-gtags-auto-update t
+        helm-gtags-use-input-at-cursor t
+        helm-gtags-prefix-key "\C-c t"
+        helm-gtags-suggested-key-mapping t)
+  (add-hook 'c-mode-common-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+  (define-key helm-gtags-mode-map (kbd "C-c t u") 'helm-gtags-update-tags)
+  (define-key helm-gtags-mode-map (kbd "C-c t a") 'helm-gtags-tags-in-this-function)
+  (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+  (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+  (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+  (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+  (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))
+
+(use-package auto-complete
+  :config
+  (ac-config-default)
   (add-hook 'c-mode-common-hook
             (lambda ()
-              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                (ggtags-mode 1)))))
+              (add-to-list 'ac-sources 'ac-source-c-headers)
+              (add-to-list 'ac-sources '"/usr/include")
+              (add-to-list 'ac-sources '"/usr/include/x86_64-linux-gnu")
+              (add-to-list 'ac-sources '"/usr/local/include"))))
 
 ;;(defun dont-indent-innamespace ()
 ;;   (c-set-offset 'innamespace [0]))
@@ -348,6 +386,9 @@
 
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
+
+;; C-n adds newline if at end of file
+(setq next-line-add-newlines t)
 
 (start-shells)
 
