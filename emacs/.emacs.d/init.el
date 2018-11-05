@@ -85,13 +85,35 @@
 (add-hook 'company-completion-finished-hook 'company-maybe-turn-on-fci)
 (add-hook 'company-completion-cancelled-hook 'company-maybe-turn-on-fci)
 
+(use-package company-c-headers
+  :config
+  (add-to-list 'company-backends 'company-c-headers))
+
+(add-hook 'after-init-hook 'global-company-mode)
+
 ;; parse cmake files to allow smarter syntax checking/autocomplete, etc
 (use-package cpputils-cmake
   :config
-  (add-hook 'c-mode-common-hook
+  (add-hook 'c++-mode-hook
             (lambda ()
-              (if (derived-mode-p 'c-mode 'c++-mode)
-                  (cppcm-reload-all)))))
+              (cppcm-reload-all))))
+
+(require 'cc-mode)
+(require 'semantic)
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1)
+(semantic-mode 1)
+
+; https://github.com/tuhdo/semantic-refactor
+(use-package srefactor
+  :config
+  (require 'srefactor-lisp)
+  (define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+  (define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+  (global-set-key (kbd "M-RET o") 'srefactor-lisp-one-line)
+  (global-set-key (kbd "M-RET m") 'srefactor-lisp-format-sexp)
+  (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
+  (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -225,7 +247,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (helm-gtags helm ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (srefactor helm-gtags helm ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
@@ -312,8 +334,8 @@
   (add-hook 'c-mode-common-hook 'helm-gtags-mode)
   (add-hook 'asm-mode-hook 'helm-gtags-mode)
   (define-key helm-gtags-mode-map (kbd "C-c t u") 'helm-gtags-update-tags)
-  (define-key helm-gtags-mode-map (kbd "C-c t a") 'helm-gtags-tags-in-this-function)
-  (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+  (define-key helm-gtags-mode-map (kbd "C-c t f") 'helm-gtags-tags-in-this-function)
+  (define-key helm-gtags-mode-map (kbd "C-c t s") 'helm-gtags-select)
   (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
   (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
   (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
