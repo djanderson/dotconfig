@@ -40,6 +40,24 @@
 (use-package better-defaults
   :demand)
 
+(use-package smex
+  :config
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands))
+
+(use-package ido-completing-read+
+  :config
+  (ido-ubiquitous-mode 1))
+
+(use-package ido-vertical-mode
+  :config
+  (ido-mode 1)
+  (ido-vertical-mode 1)
+  (ido-everywhere 1)
+  (setq ido-use-faces t)
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+
 (use-package fill-column-indicator
   :demand
   :config
@@ -115,6 +133,13 @@
   (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
   (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer))
 
+(use-package ggtags
+  :config
+  (add-hook 'c-mode-common-hook
+          (lambda ()
+            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+              (ggtags-mode 1)))))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -137,7 +162,9 @@
   :init (setq
          magit-revert-buffers nil)
   :bind (("C-x g" . magit-status)
-         ("C-x C-g b" . magit-blame)))
+         ("C-x C-g b" . magit-blame))
+  :config
+  (setq magit-completing-read-function 'magit-ido-completing-read))
 
 (use-package expand-region
   :commands 'er/expand-region
@@ -247,7 +274,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (srefactor helm-gtags helm ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
@@ -312,34 +339,6 @@
 (add-hook 'c-mode-common-hook
           (lambda ()
             (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
-
-(use-package helm
-  :config
-  (require 'helm-config)
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-  (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  (setq helm-split-window-in-side-p t  ; open helm buffer inside current buffer
-        helm-autoresize-max-height 0
-        helm-autoresize-min-height 30)
-  (helm-autoresize-mode 1)
-  (helm-mode 1))
-
-(use-package helm-gtags
-  :config
-  (setq helm-gtags-auto-update t
-        helm-gtags-use-input-at-cursor t
-        helm-gtags-prefix-key "\C-c t"
-        helm-gtags-suggested-key-mapping t)
-  (add-hook 'c-mode-common-hook 'helm-gtags-mode)
-  (add-hook 'asm-mode-hook 'helm-gtags-mode)
-  (define-key helm-gtags-mode-map (kbd "C-c t u") 'helm-gtags-update-tags)
-  (define-key helm-gtags-mode-map (kbd "C-c t f") 'helm-gtags-tags-in-this-function)
-  (define-key helm-gtags-mode-map (kbd "C-c t s") 'helm-gtags-select)
-  (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
-  (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
-  (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-  (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))
 
 (use-package auto-complete
   :config
@@ -408,9 +407,6 @@
 
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
-
-;; C-n adds newline if at end of file
-(setq next-line-add-newlines t)
 
 (start-shells)
 
