@@ -107,8 +107,6 @@
   :config
   (add-to-list 'company-backends 'company-c-headers))
 
-(add-hook 'after-init-hook 'global-company-mode)
-
 ;; parse cmake files to allow smarter syntax checking/autocomplete, etc
 (use-package cpputils-cmake
   :config
@@ -191,6 +189,8 @@
             (lambda ()
               (flycheck-mode t))))
 
+(use-package blacken)
+
 (use-package elpy
   :config
   (elpy-enable)
@@ -199,7 +199,12 @@
               (elpy-mode t)))
   (setq elpy-rpc-python-command "python3")
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
+  (add-hook 'elpy-mode-hook 'blacken-mode))
+
+(use-package web-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package cargo)
 
@@ -274,7 +279,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
