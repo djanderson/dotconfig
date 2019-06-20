@@ -58,6 +58,11 @@
   (setq ido-use-faces t)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
+;; Make C-i distinct from TAB
+(setq local-function-key-map (delq '(kp-tab . [9]) local-function-key-map))
+;; Then rebind C-i to open imenu
+(global-set-key (kbd "C-i") 'imenu)
+
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
 ;;   (define-key map (kbd "<C-M-return>") #'yafolding-toggle-all)
