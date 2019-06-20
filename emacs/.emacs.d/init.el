@@ -58,6 +58,15 @@
   (setq ido-use-faces t)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
+;; yafolding default keymap:
+;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
+;;   (define-key map (kbd "<C-M-return>") #'yafolding-toggle-all)
+;;   (define-key map (kbd "<C-return>")   #'yafolding-toggle-element)
+(use-package yafolding
+  :config
+  (add-hook 'prog-mode-hook
+            (lambda () (yafolding-mode))))
+
 (use-package fill-column-indicator
   :demand
   :config
@@ -279,7 +288,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (yafolding go-mode auto-complete blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
