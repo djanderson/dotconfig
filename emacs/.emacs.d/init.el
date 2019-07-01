@@ -58,11 +58,6 @@
   (setq ido-use-faces t)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
-;; Make C-i distinct from TAB
-(setq local-function-key-map (delq '(kp-tab . [9]) local-function-key-map))
-;; Then rebind C-i to open imenu
-(global-set-key (kbd "C-i") 'imenu)
-
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
 ;;   (define-key map (kbd "<C-M-return>") #'yafolding-toggle-all)
@@ -145,12 +140,54 @@
   (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
   (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer))
 
-(use-package ggtags
+(use-package company
+  :config
+  (progn
+    (add-hook 'after-init-hook 'global-company-mode)
+    (global-set-key (kbd "M-/") 'company-complete-common-or-cycle)
+    (setq company-idle-delay 0)))
+
+(use-package rtags
+  :config
+  (progn
+    (unless (rtags-executable-find "rc") (error "Binary rc is not installed!"))
+    (unless (rtags-executable-find "rdm") (error "Binary rdm is not installed!"))
+
+    (define-key c-mode-base-map (kbd "M-.") 'rtags-find-symbol-at-point)
+    (define-key c-mode-base-map (kbd "M-,") 'rtags-find-references-at-point)
+    (define-key c-mode-base-map (kbd "M-?") 'rtags-display-summary)
+    (rtags-enable-standard-keybindings)
+
+    ;; Shutdown rdm when leaving emacs.
+    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
+
+;; Use rtags for auto-completion.
+(use-package company-rtags
+  :config
+  (progn
+    (setq rtags-autostart-diagnostics t)
+    (rtags-diagnostics)
+    (setq rtags-completions-enabled t)
+    (push 'company-rtags company-backends)))
+
+;; Live code checking.
+(use-package flycheck-rtags
+  :config
+  (progn
+    ;; ensure that we use only rtags checking
+    ;; https://github.com/Andersbakken/rtags#optional-1
+    (defun setup-flycheck-rtags ()
+      (flycheck-select-checker 'rtags)
+      (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+      (setq-local flycheck-check-syntax-automatically nil)
+      (rtags-set-periodic-reparse-timeout 2.0)  ;; Run flycheck 2 seconds after being idle.
+      )
+    (add-hook 'c-mode-common-hook #'setup-flycheck-rtags)))
+
+(use-package cmake-ide
   :config
   (add-hook 'c-mode-common-hook
-          (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-              (ggtags-mode 1)))))
+            (cmake-ide-setup)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -187,21 +224,8 @@
   ("M-n" . flycheck-next-error)
   ("M-p" . flycheck-previous-error)
   :config
-  (add-hook 'c++-mode-hook
-            (lambda ()
-              (setq flycheck-gcc-language-standard "c++11")))
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (flycheck-mode t)))
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (flycheck-mode t)))
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (flycheck-mode t)))
-  (add-hook 'octave-mode-hook
-            (lambda ()
-              (flycheck-mode t))))
+  (progn
+    (global-flycheck-mode)))
 
 (use-package blacken)
 
@@ -242,6 +266,11 @@
 (use-package flycheck-cask
   :commands flycheck-cask-setup
   :config (add-hook 'emacs-lisp-mode-hook (flycheck-cask-setup)))
+
+(use-package flycheck-clang-analyzer
+  :ensure t
+  :after flycheck
+  :config (flycheck-clang-analyzer-setup))
 
 ;; make mac key placement match PC
 (setq mac-option-key-is-meta nil)
@@ -293,7 +322,15 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (yafolding go-mode auto-complete blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (company-c-headers rtags cmake-ide flycheck-clang-analyzer yafolding go-mode auto-complete blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+ '(safe-local-variable-values
+   (quote
+    ((eval setq flycheck-clang-include-path
+           (split-string
+            (shell-command-to-string
+             (format "find %s -name '*.h' |xargs dirname |uniq" default-directory))
+            "
+")))))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
