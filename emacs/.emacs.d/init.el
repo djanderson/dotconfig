@@ -58,6 +58,22 @@
   (setq ido-use-faces t)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
+(use-package lsp-mode
+  :hook (XXX-mode . lsp)
+  :commands lsp)
+
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package company-lsp :commands company-lsp)
+(use-package dap-mode
+  :config
+  (require 'dap-python)
+  (require 'dap-lldb)                   ; c / c++ / rust
+  )
+
+(use-package cquery
+  :config
+  (setq cquery-executable "/usr/local/bin/cquery"))
+
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
 ;;   (define-key map (kbd "<C-M-return>") #'yafolding-toggle-all)
@@ -116,13 +132,6 @@
   :config
   (add-to-list 'company-backends 'company-c-headers))
 
-;; parse cmake files to allow smarter syntax checking/autocomplete, etc
-(use-package cpputils-cmake
-  :config
-  (add-hook 'c++-mode-hook
-            (lambda ()
-              (cppcm-reload-all))))
-
 (require 'cc-mode)
 (require 'semantic)
 (global-semanticdb-minor-mode 1)
@@ -143,51 +152,8 @@
 (use-package company
   :config
   (progn
-    (add-hook 'after-init-hook 'global-company-mode)
     (global-set-key (kbd "M-/") 'company-complete-common-or-cycle)
     (setq company-idle-delay 0)))
-
-(use-package rtags
-  :config
-  (progn
-    (unless (rtags-executable-find "rc") (error "Binary rc is not installed!"))
-    (unless (rtags-executable-find "rdm") (error "Binary rdm is not installed!"))
-
-    (define-key c-mode-base-map (kbd "M-.") 'rtags-find-symbol-at-point)
-    (define-key c-mode-base-map (kbd "M-,") 'rtags-find-references-at-point)
-    (define-key c-mode-base-map (kbd "M-?") 'rtags-display-summary)
-    (rtags-enable-standard-keybindings)
-
-    ;; Shutdown rdm when leaving emacs.
-    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
-
-;; Use rtags for auto-completion.
-(use-package company-rtags
-  :config
-  (progn
-    (setq rtags-autostart-diagnostics t)
-    (rtags-diagnostics)
-    (setq rtags-completions-enabled t)
-    (push 'company-rtags company-backends)))
-
-;; Live code checking.
-(use-package flycheck-rtags
-  :config
-  (progn
-    ;; ensure that we use only rtags checking
-    ;; https://github.com/Andersbakken/rtags#optional-1
-    (defun setup-flycheck-rtags ()
-      (flycheck-select-checker 'rtags)
-      (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-      (setq-local flycheck-check-syntax-automatically nil)
-      (rtags-set-periodic-reparse-timeout 2.0)  ;; Run flycheck 2 seconds after being idle.
-      )
-    (add-hook 'c-mode-common-hook #'setup-flycheck-rtags)))
-
-(use-package cmake-ide
-  :config
-  (add-hook 'c-mode-common-hook
-            (cmake-ide-setup)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -208,8 +174,6 @@
 
 (use-package magit
   :commands magit-status magit-blame
-  :init (setq
-         magit-revert-buffers nil)
   :bind (("C-x g" . magit-status)
          ("C-x C-g b" . magit-blame))
   :config
@@ -250,18 +214,12 @@
   :config
   ;; set to t when rustfmt supports vertically aligning matches/enums
   (setq rust-format-on-save nil)
-  (setq racer-cmd "~/.cargo/bin/racer")
-  (setq racer-rust-src-path "~/src/rust/src")
   (add-hook 'rust-mode-hook #'racer-mode)
   (add-hook 'rust-mode-hook #'flycheck-mode)
   (add-hook 'rust-mode-hook #'cargo-minor-mode)
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   (add-hook 'racer-mode-hook #'eldoc-mode)
   (add-hook 'racer-mode-hook #'company-mode))
-
-(with-eval-after-load 'rjsx
-  (define-key rjsx-mode-map "<" nil)
-  (define-key rjsx-mode-map (kbd "C-d") nil))
 
 (use-package flycheck-cask
   :commands flycheck-cask-setup
@@ -271,12 +229,6 @@
   :ensure t
   :after flycheck
   :config (flycheck-clang-analyzer-setup))
-
-;; make mac key placement match PC
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
 
 ;; turn off toolbar and menubar and scrollbar
 (when window-system
@@ -319,10 +271,9 @@
     (".bzr" "CVS" ".git" ".hg" ".svn" ".tox" "build" "dist" ".cask" ".eggs")))
  '(elpy-test-discover-runner-command (quote ("python3" "-m" "pytest")))
  '(elpy-test-runner (quote elpy-test-pytest-runner))
- '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (company-c-headers rtags cmake-ide flycheck-clang-analyzer yafolding go-mode auto-complete blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server cpputils-cmake better-defaults)))
+    (dap-mode: cquery lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
  '(safe-local-variable-values
    (quote
     ((eval setq flycheck-clang-include-path
@@ -358,6 +309,7 @@
 
 ;; run a few shells.
 (defun start-shells ()
+  "Start all shells."
   (mapcar 'shell local-shells))
 
 (add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
@@ -395,16 +347,6 @@
 (add-hook 'c-mode-common-hook
           (lambda ()
             (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
-
-(use-package auto-complete
-  :config
-  (ac-config-default)
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (add-to-list 'ac-sources 'ac-source-c-headers)
-              (add-to-list 'ac-sources '"/usr/include")
-              (add-to-list 'ac-sources '"/usr/include/x86_64-linux-gnu")
-              (add-to-list 'ac-sources '"/usr/local/include"))))
 
 ;;(defun dont-indent-innamespace ()
 ;;   (c-set-offset 'innamespace [0]))
