@@ -361,6 +361,7 @@
 
 (use-package shell-pop
   :init
+  ; https://github.com/kyagi/shell-pop-el/issues/51#issuecomment-297470855
   (push (cons "shell" display-buffer--same-window-action) display-buffer-alist)
   :bind
   ("<f4>" . shell-pop)
