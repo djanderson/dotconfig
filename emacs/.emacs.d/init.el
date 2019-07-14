@@ -40,6 +40,19 @@
 (use-package better-defaults
   :demand)
 
+(use-package treemacs
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-magit
+  :after treemacs)
+
 (use-package smex
   :config
   (smex-initialize)
@@ -58,8 +71,10 @@
   (setq ido-use-faces t)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
+(use-package yasnippet)
+
 (use-package lsp-mode
-  :hook (XXX-mode . lsp)
+  :hook (prog-mode . lsp)
   :commands lsp)
 
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -70,9 +85,11 @@
   (require 'dap-lldb)                   ; c / c++ / rust
   )
 
-(use-package cquery
+(use-package ccls
+  :hook ((c-mode c++-mode objc-mode) .
+         (lambda () (require 'ccls) (lsp)))
   :config
-  (setq cquery-executable "/usr/local/bin/cquery"))
+  (setq ccls-executable "/home/dja/src/ccls/Release/ccls"))
 
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
@@ -192,6 +209,7 @@
     (global-flycheck-mode)))
 
 (use-package blacken)
+(use-package isortify)
 
 (use-package elpy
   :config
@@ -202,7 +220,8 @@
   (setq elpy-rpc-python-command "python3")
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode)
-  (add-hook 'elpy-mode-hook 'blacken-mode))
+  (add-hook 'elpy-mode-hook 'blacken-mode)
+  (add-hook 'elpy-mode-hook 'isortify-mode))
 
 (use-package web-mode
   :config
@@ -273,17 +292,9 @@
  '(elpy-test-runner (quote elpy-test-pytest-runner))
  '(package-selected-packages
    (quote
-    (dap-mode: cquery lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
- '(safe-local-variable-values
-   (quote
-    ((eval setq flycheck-clang-include-path
-           (split-string
-            (shell-command-to-string
-             (format "find %s -name '*.h' |xargs dirname |uniq" default-directory))
-            "
-")))))
+    (shell-pop centaur-tabs treemacs-magit treemacs ccls dap-mode: cquery lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults))))
  '(subword-mode t t)
- '(visible-bell (quote top-bottom)))
+ '(visible-bell (quote top-bottom))
 
 (global-hl-line-mode 1)
 
@@ -298,21 +309,68 @@
                      :background "gray20"
                      :box '(:line-width 1 :style released-button))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Tabs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package centaur-tabs
+  :demand
+  :config
+  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-height 32)
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-set-bar 'over)
+  (setq centaur-tabs-set-modified-marker t)
+  (centaur-tabs-headline-match)
+  (centaur-tabs-mode t)
+  (defun centaur-tabs-buffer-groups ()
+    "`centaur-tabs-buffer-groups' control buffers' group rules.
+
+ Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+ All buffer name start with * will group to \"Emacs\".
+ Other buffer group by `centaur-tabs-get-group-name' with project name."
+    (list
+     (cond
+      ((or (string-equal "*" (substring (buffer-name) 0 1))
+           (memq major-mode '(magit-process-mode
+                              magit-status-mode
+                              magit-diff-mode
+                              magit-log-mode
+                              magit-file-mode
+                              magit-blob-mode
+                              magit-blame-mode
+                              )))
+       "Emacs")
+      ((derived-mode-p 'prog-mode)
+       "Editing")
+      ((derived-mode-p 'shell-mode)
+       "Shells")
+      (t
+       (centaur-tabs-get-group-name (current-buffer))))))
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward)
+  ("C-c t" . centaur-tabs-counsel-switch-group))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shells
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setenv "PAGER" "cat")
 
-(defvar local-shells
-  '("*shell0*" "*shell1*" "*shell2*" "*shell3*"))
+(use-package shell-pop
+  :init
+  (push (cons "shell" display-buffer--same-window-action) display-buffer-alist)
+  :bind
+  ("<f4>" . shell-pop)
+  :config
+  (setq shell-pop-internal-mode-buffer "shell")
+  (setq shell-pop-term-shell "/bin/bash")
+  (setq shell-pop-full-span nil)
+  (setq shell-pop-universal-key "<f4>"))
+;; C-# f4 to open # tabs
 
-;; run a few shells.
-(defun start-shells ()
-  "Start all shells."
-  (mapcar 'shell local-shells))
-
-(add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming
@@ -405,8 +463,6 @@
 
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
-
-(start-shells)
 
 (provide 'init)
 ;;; init.el ends here
