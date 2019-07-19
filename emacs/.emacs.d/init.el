@@ -85,11 +85,14 @@
   (require 'dap-lldb)                   ; c / c++ / rust
   )
 
-(use-package ccls
-  :hook ((c-mode c++-mode objc-mode) .
-         (lambda () (require 'ccls) (lsp)))
+(use-package cquery
   :config
-  (setq ccls-executable "/home/dja/src/ccls/Release/ccls"))
+  (setq cquery-executable "/local/mnt/workspace/cquery/build/release/bin/cquery")
+  (setq cquery-extra-init-params
+        '(:cacheDirectory "/local/mnt/workspace/.cquery_cached_index"))
+  :commands lsp
+  :hook ((c-mode c++-mode objc-mode) .
+         (lambda () (require 'cquery) (lsp))))
 
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
@@ -292,7 +295,7 @@
  '(elpy-test-runner (quote elpy-test-pytest-runner))
  '(package-selected-packages
    (quote
-    (shell-pop centaur-tabs treemacs-magit treemacs ccls dap-mode: cquery lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults))))
+    (shell-pop centaur-tabs treemacs-magit treemacs dap-mode: cquery lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults))))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom))
 
