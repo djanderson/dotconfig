@@ -77,7 +77,10 @@
   :hook (prog-mode . lsp)
   :commands lsp)
 
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui :commands lsp-ui-mode
+  :config
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 (use-package company-lsp :commands company-lsp)
 (use-package dap-mode
   :config
@@ -86,13 +89,11 @@
   )
 
 (use-package cquery
-  :config
-  (setq cquery-executable "/local/mnt/workspace/cquery/build/release/bin/cquery")
-  (setq cquery-extra-init-params
-        '(:cacheDirectory "/local/mnt/workspace/.cquery_cached_index"))
-  :commands lsp
   :hook ((c-mode c++-mode objc-mode) .
-         (lambda () (require 'cquery) (lsp))))
+         (lambda () (require 'cquery) (lsp)))
+  :config
+  (setq cquery-cache-dir "/home/dja/src/cquery/.cquery_cached_index")
+  (setq cquery-executable "/home/dja/src/cquery/build/release/bin/cquery"))
 
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
