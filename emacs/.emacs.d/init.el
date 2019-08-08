@@ -72,28 +72,49 @@
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
 (use-package yasnippet)
+(use-package projectile)
 
 (use-package lsp-mode
+  :ensure t
   :hook (prog-mode . lsp)
-  :commands lsp)
-
-(use-package lsp-ui :commands lsp-ui-mode
   :config
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
-(use-package company-lsp :commands company-lsp)
+  (setq lsp-prefer-flymake nil)
+  (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+  ;; lsp extras
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+  (use-package company-lsp
+    :config
+    (push 'company-lsp company-backends))
+
+  ;; NB: only required if you prefer flake8 instead of the default
+  ;; send pyls config via lsp-after-initialize-hook -- harmless for
+  ;; other servers due to pyls key, but would prefer only sending this
+  ;; when pyls gets initialised (:initialize function in
+  ;; lsp-define-stdio-client is invoked too early (before server
+  ;; start)) -- cpbotha
+  (defun lsp-set-cfg ()
+    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+      ;; TODO: check lsp--cur-workspace here to decide per server / project
+      (lsp--set-configuration lsp-cfg)))
+
+  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+
 (use-package dap-mode
   :config
   (require 'dap-python)
   (require 'dap-lldb)                   ; c / c++ / rust
   )
 
-(use-package cquery
-  :hook ((c-mode c++-mode objc-mode) .
-         (lambda () (require 'cquery) (lsp)))
+(use-package ccls
   :config
-  (setq cquery-cache-dir "/home/dja/src/cquery/.cquery_cached_index")
-  (setq cquery-executable "/home/dja/src/cquery/build/release/bin/cquery"))
+  (setq ccls-executable "/local/mnt/workspace/ccls/Release/ccls")
+  :hook ((c-mode c++-mode) .
+         (lambda () (require 'ccls) (lsp))))
 
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
@@ -233,17 +254,6 @@
 
 (use-package cargo)
 
-(use-package rust-mode
-  :config
-  ;; set to t when rustfmt supports vertically aligning matches/enums
-  (setq rust-format-on-save nil)
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'rust-mode-hook #'flycheck-mode)
-  (add-hook 'rust-mode-hook #'cargo-minor-mode)
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode))
-
 (use-package flycheck-cask
   :commands flycheck-cask-setup
   :config (add-hook 'emacs-lisp-mode-hook (flycheck-cask-setup)))
@@ -296,7 +306,7 @@
  '(elpy-test-runner (quote elpy-test-pytest-runner))
  '(package-selected-packages
    (quote
-    (shell-pop centaur-tabs treemacs-magit treemacs dap-mode: cquery lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner rust-mode queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults))))
+    (ccls lsp-ui-flycheck shell-pop centaur-tabs treemacs-magit treemacs dap-mode: lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom))
 
