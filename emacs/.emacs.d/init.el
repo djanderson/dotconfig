@@ -112,7 +112,7 @@
 
 (use-package ccls
   :config
-  (setq ccls-executable "/local/mnt/workspace/ccls/Release/ccls")
+  (setq ccls-executable "/home/dja/dev/ccls/Release/ccls")
   :hook ((c-mode c++-mode) .
          (lambda () (require 'ccls) (lsp))))
 
