@@ -308,7 +308,7 @@
    (quote
     (ccls lsp-ui-flycheck shell-pop centaur-tabs treemacs-magit treemacs dap-mode: lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
  '(subword-mode t t)
- '(visible-bell (quote top-bottom))
+ '(visible-bell (quote top-bottom)))
 
 (global-hl-line-mode 1)
 
