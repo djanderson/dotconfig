@@ -53,68 +53,60 @@
 (use-package treemacs-magit
   :after treemacs)
 
-(use-package smex
+(use-package flycheck
+  :bind
+  ("M-n" . flycheck-next-error)
+  ("M-p" . flycheck-previous-error)
   :config
-  (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-X") 'smex-major-mode-commands))
+  (progn
+    (global-flycheck-mode)))
 
-(use-package ido-completing-read+
-  :config
-  (ido-ubiquitous-mode 1))
-
-(use-package ido-vertical-mode
-  :config
-  (ido-mode 1)
-  (ido-vertical-mode 1)
-  (ido-everywhere 1)
-  (setq ido-use-faces t)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
 
 (use-package yasnippet)
 (use-package projectile)
 
-(use-package lsp-mode
-  :ensure t
-  :hook (prog-mode . lsp)
+(use-package company
   :config
-  (setq lsp-prefer-flymake nil)
-  (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-  ;; lsp extras
-  (use-package lsp-ui
-    :ensure t
-    :config
-    (setq lsp-ui-sideline-ignore-duplicate t)
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+  (progn
+    (setq company-minimum-prefix-length 1)
+    (setq company-idle-delay 0)))
 
-  (use-package company-lsp
-    :config
-    (push 'company-lsp company-backends))
+;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+(setq lsp-keymap-prefix "C-c l")
 
-  ;; NB: only required if you prefer flake8 instead of the default
-  ;; send pyls config via lsp-after-initialize-hook -- harmless for
-  ;; other servers due to pyls key, but would prefer only sending this
-  ;; when pyls gets initialised (:initialize function in
-  ;; lsp-define-stdio-client is invoked too early (before server
-  ;; start)) -- cpbotha
-  (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-      ;; TODO: check lsp--cur-workspace here to decide per server / project
-      (lsp--set-configuration lsp-cfg)))
+(use-package lsp-mode
+  :config
+  (setq gc-cons-threshold (* 100 1024 1024)
+        read-process-output-max (* 1024 1024)
+        treemacs-space-between-root-nodes nil
+        lsp-idle-delay 0.1 ;; clangd is fast
+        lsp-headerline-breadcrumb-enable t)
+  :hook ((python-mode . lsp)
+         (c-mode . lsp)
+         (c++-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
 
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
 (use-package dap-mode
   :config
+  (setq dap-auto-configure-features '(sessions locals controls tooltip))
   (require 'dap-python)
   (require 'dap-lldb)                   ; c / c++ / rust
   )
 
-(use-package ccls
-  :config
-  (setq ccls-executable "/home/dja/dev/ccls/Release/ccls")
-  :hook ((c-mode c++-mode) .
-         (lambda () (require 'ccls) (lsp))))
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+;; which-key integration
+(use-package which-key
+    :config
+    (which-key-mode))
 
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
@@ -170,33 +162,6 @@
 (add-hook 'company-completion-finished-hook 'company-maybe-turn-on-fci)
 (add-hook 'company-completion-cancelled-hook 'company-maybe-turn-on-fci)
 
-(use-package company-c-headers
-  :config
-  (add-to-list 'company-backends 'company-c-headers))
-
-(require 'cc-mode)
-(require 'semantic)
-(global-semanticdb-minor-mode 1)
-(global-semantic-idle-scheduler-mode 1)
-(semantic-mode 1)
-
-; https://github.com/tuhdo/semantic-refactor
-(use-package srefactor
-  :config
-  (require 'srefactor-lisp)
-  (define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-  (define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-  (global-set-key (kbd "M-RET o") 'srefactor-lisp-one-line)
-  (global-set-key (kbd "M-RET m") 'srefactor-lisp-format-sexp)
-  (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
-  (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer))
-
-(use-package company
-  :config
-  (progn
-    (global-set-key (kbd "M-/") 'company-complete-common-or-cycle)
-    (setq company-idle-delay 0)))
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -217,51 +182,20 @@
 (use-package magit
   :commands magit-status magit-blame
   :bind (("C-x g" . magit-status)
-         ("C-x C-g b" . magit-blame))
-  :config
-  (setq magit-completing-read-function 'magit-ido-completing-read))
+         ("C-x C-g b" . magit-blame)))
 
 (use-package expand-region
   :commands 'er/expand-region
   :bind ("C-=" . er/expand-region))
 
-(use-package flycheck
-  :bind
-  ("M-n" . flycheck-next-error)
-  ("M-p" . flycheck-previous-error)
-  :config
-  (progn
-    (global-flycheck-mode)))
-
 (use-package blacken)
 (use-package isortify)
-
-(use-package elpy
-  :config
-  (elpy-enable)
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (elpy-mode t)))
-  (setq elpy-rpc-python-command "python3")
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode)
-  (add-hook 'elpy-mode-hook 'blacken-mode)
-  (add-hook 'elpy-mode-hook 'isortify-mode))
 
 (use-package web-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 (use-package cargo)
-
-(use-package flycheck-cask
-  :commands flycheck-cask-setup
-  :config (add-hook 'emacs-lisp-mode-hook (flycheck-cask-setup)))
-
-(use-package flycheck-clang-analyzer
-  :ensure t
-  :after flycheck
-  :config (flycheck-clang-analyzer-setup))
 
 ;; turn off toolbar and menubar and scrollbar
 (when window-system
@@ -295,18 +229,9 @@
  '(company-show-numbers t)
  '(company-tooltip-align-annotations f)
  '(custom-enabled-themes (quote (wombat)))
- '(elpy-company-post-completion-function (quote ignore))
- '(elpy-modules
-   (quote
-    (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-highlight-indentation elpy-module-yasnippet elpy-module-django elpy-module-sane-defaults)))
- '(elpy-project-ignored-directories
-   (quote
-    (".bzr" "CVS" ".git" ".hg" ".svn" ".tox" "build" "dist" ".cask" ".eggs")))
- '(elpy-test-discover-runner-command (quote ("python3" "-m" "pytest")))
- '(elpy-test-runner (quote elpy-test-pytest-runner))
  '(package-selected-packages
    (quote
-    (ccls lsp-ui-flycheck shell-pop centaur-tabs treemacs-magit treemacs dap-mode: lsp-mode protobuf-mode cmake-mode company-c-headers flycheck-clang-analyzer yafolding go-mode auto-complete isortify blacken web-mode ido-completing-read+ smex flx-ido ido-vertical-mode srefactor ac-c-headers cider clojure-mode projectile markdown-preview-mode markdown-mode arduino-mode flycheck-rust yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit elpy company-go racer company epl flycheck sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
+    (shell-pop centaur-tabs treemacs-magit treemacs dap-mode lsp-mode protobuf-mode cmake-mode company-c-headers yafolding go-mode auto-complete isortify blacken web-mode ac-c-headers projectile markdown-preview-mode markdown-mode arduino-mode yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit company-go racer company epl sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
@@ -392,7 +317,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Cleanup trailing whitespace before save
-(add-hook 'before-save-hook 'whitespace-cleanup)
+;(add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; Use sh-mode for Dockerfile
 (add-to-list 'auto-mode-alist '("Dockerfile" . sh-mode))
@@ -430,13 +355,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
-(defadvice ido-find-file (after find-file-sudo activate)
-  "Find file as root if necessary."
-  (unless (and buffer-file-name
-               (file-writable-p buffer-file-name))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
 ;; https://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
 ;; (+ 1 2)C-c e -> 3
