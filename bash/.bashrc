@@ -131,3 +131,4 @@ fi
 
 # Make caps another control
 setxkbmap -option ctrl:nocaps
+source "$HOME/.cargo/env"

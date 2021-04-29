@@ -1,4 +1,6 @@
-;; Douglas Anderson's emacs.d/init.el file
+;;; init.el --- Douglas Anderson's emacs.d/init.el file
+
+;;; Code:
 
 ;; global variables
 (setq
@@ -40,6 +42,12 @@
 (use-package better-defaults
   :demand)
 
+(use-package tex :ensure auctex
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil))
+
 (use-package treemacs
   :bind
   (:map global-map
@@ -54,6 +62,7 @@
   :after treemacs)
 
 (use-package flycheck
+  :ensure
   :bind
   ("M-n" . flycheck-next-error)
   ("M-p" . flycheck-previous-error)
@@ -61,52 +70,161 @@
   (progn
     (global-flycheck-mode)))
 
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
+(use-package smex
+  :config
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands))
 
-(use-package yasnippet)
+(use-package ido-completing-read+
+  :config
+  (ido-ubiquitous-mode 1))
+
+(use-package ido-vertical-mode
+  :config
+  (ido-mode 1)
+  (ido-vertical-mode 1)
+  (ido-everywhere 1)
+  (setq ido-use-faces t)
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+
+
+;; http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
+(defadvice ido-find-file (after find-file-sudo activate)
+  "Find file as root if necessary."
+  (unless (and buffer-file-name
+               (file-writable-p buffer-file-name))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
 (use-package projectile)
 
 (use-package company
-  :config
-  (progn
-    (setq company-minimum-prefix-length 1)
-    (setq company-idle-delay 0)))
+  :ensure
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0) ;; how long to wait until popup
+  ;; (company-begin-commands nil) ;; uncomment to disable popup
+  :bind
+  (:map company-active-map
+	      ("C-n". company-select-next)
+	      ("C-p". company-select-previous)
+	      ("M-<". company-select-first)
+	      ("M->". company-select-last)))
+
+
+(use-package company-lsp)
 
 ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
 (setq lsp-keymap-prefix "C-c l")
 
-(use-package lsp-mode
+;; Enable scala-mode for highlighting, indentation and motion commands
+(use-package scala-mode
+  :interpreter
+    ("scala" . scala-mode))
+
+;; Add metals backend for lsp-mode
+(use-package lsp-metals
+  :config (setq lsp-metals-treeview-show-when-views-received t))
+
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :commands sbt-start sbt-command
   :config
-  (setq gc-cons-threshold (* 100 1024 1024)
-        read-process-output-max (* 1024 1024)
-        treemacs-space-between-root-nodes nil
-        lsp-idle-delay 0.1 ;; clangd is fast
-        lsp-headerline-breadcrumb-enable t)
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+   (setq sbt:program-options '("-Dsbt.supershell=false"))
+)
+
+(use-package toml-mode :ensure)
+
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
+
+(defun rk/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm
+  (setq-local buffer-save-without-query t))
+
+(use-package lsp-mode
+  :custom
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.5)
+  (gc-cons-threshold (* 100 1024 1024))
+  (read-process-output-max (* 1024 1024))
+  (treemacs-space-between-root-nodes nil)
+  (lsp-headerline-breadcrumb-enable t)
   :hook ((python-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
-         (lsp-mode . lsp-enable-which-key-integration))
+         (scala-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration)
+         (lsp-mode . lsp-lens-mode))
   :commands lsp)
 
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui
+  :commands lsp-ui-mode
+    :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable nil))
+
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
 (use-package dap-mode
+  :ensure
   :config
-  (setq dap-auto-configure-features '(sessions locals controls tooltip))
-  (require 'dap-python)
-  (require 'dap-lldb)                   ; c / c++ / rust
-  )
+  (dap-ui-mode)
+  (dap-ui-controls-mode 1)
 
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+  (require 'dap-lldb)
+  (require 'dap-gdb-lldb)
+  ;; installs .extension/vscode
+  (dap-gdb-lldb-setup)
+  (dap-register-debug-template
+   "Rust::LLDB Run Configuration"
+   (list :type "lldb"
+         :request "launch"
+         :name "LLDB::Run"
+         :gdbpath "rust-lldb"
+         :target nil
+         :cwd nil)))
 
 ;; which-key integration
 (use-package which-key
     :config
     (which-key-mode))
+
+
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
 
 ;; yafolding default keymap:
 ;;   (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
@@ -133,7 +251,7 @@
   (add-hook 'scala-mode-hook
             (lambda ()
               (fci-mode t)))
-  (add-hook 'rust-mode-hook
+  (add-hook 'rustic-mode-hook
             (lambda ()
               (fci-mode t)))
   (add-hook 'go-mode-hook
@@ -195,8 +313,6 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
-(use-package cargo)
-
 ;; turn off toolbar and menubar and scrollbar
 (when window-system
   (if (fboundp 'menu-bar-mode)
@@ -231,7 +347,7 @@
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
-    (shell-pop centaur-tabs treemacs-magit treemacs dap-mode lsp-mode protobuf-mode cmake-mode company-c-headers yafolding go-mode auto-complete isortify blacken web-mode ac-c-headers projectile markdown-preview-mode markdown-mode arduino-mode yaml-mode magit company-racer use-package cargo rjsx-mode js2-mode paredit company-go racer company epl sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
+    (shell-pop centaur-tabs treemacs-magit treemacs dap-mode lsp-mode protobuf-mode cmake-mode company-c-headers yafolding go-mode auto-complete isortify blacken web-mode ac-c-headers projectile markdown-preview-mode markdown-mode arduino-mode yaml-mode magit use-package rjsx-mode js2-mode paredit company-go company epl sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
  '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
