@@ -132,11 +132,15 @@ fi
 function workon() {
     if (( $# != 1 )); then
         echo "workon: pass directory name relative to $HOME" > /dev/stderr
+        return
     fi
-    local venvdir="$HOME/$1/.venv"
+    local repo="$HOME/$1"
+    local venvdir="$repo/.venv"
     if [[ ! -d "$venvdir" ]]; then
         echo "workon: '$venvdir' doesn't exist" > /dev/stderr
+        return
     fi
+    cd "$repo"
     source "$venvdir/bin/activate"
 }
 
