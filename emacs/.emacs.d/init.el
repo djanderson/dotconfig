@@ -106,13 +106,10 @@
   ;; (company-begin-commands nil) ;; uncomment to disable popup
   :bind
   (:map company-active-map
-	      ("C-n". company-select-next)
-	      ("C-p". company-select-previous)
-	      ("M-<". company-select-first)
-	      ("M->". company-select-last)))
-
-
-(use-package company-lsp)
+          ("C-n". company-select-next)
+          ("C-p". company-select-previous)
+          ("M-<". company-select-first)
+          ("M->". company-select-last)))
 
 ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
 (setq lsp-keymap-prefix "C-c l")
@@ -484,8 +481,22 @@
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
 
+(if (string-equal system-type "darwin")
+    (progn
+      ;; make mac key placement match PC
+      (setq mac-option-key-is-meta nil)
+      (setq mac-command-key-is-meta t)
+      (setq mac-command-modifier 'meta)
+      (setq mac-option-modifier nil)
+      (setq visible-bell nil)
+      (custom-set-variables
+       '(gnutls-algorithm-priority "normal:-vers-tls1.3"))))
+
 (global-set-key (kbd "C-c e") 'fc-eval-and-replace)
 (global-set-key (kbd "C-M-j") 'join-line)
+
+;; Cleanup trailing whitespace before save
+(add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; turn on pending delete (when a region is selected, typing replaces it)
 (delete-selection-mode t)
@@ -512,6 +523,8 @@
 
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
+
+(load-file "~/.emacs.d/custom.el")
 
 (provide 'init)
 ;;; init.el ends here
