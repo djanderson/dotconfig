@@ -129,6 +129,15 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Make caps another control
-setxkbmap -option ctrl:nocaps
-source "$HOME/.cargo/env"
+function workon() {
+    if (( $# != 1 )); then
+        echo "workon: pass directory name relative to $HOME" > /dev/stderr
+    fi
+    local venvdir="$HOME/$1/.venv"
+    if [[ ! -d "$venvdir" ]]; then
+        echo "workon: '$venvdir' doesn't exist" > /dev/stderr
+    fi
+    source "$venvdir/bin/activate"
+}
+
+#source "$HOME/.cargo/env"
