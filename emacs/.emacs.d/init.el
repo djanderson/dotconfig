@@ -49,6 +49,8 @@
   (setq-default TeX-master nil))
 
 (use-package treemacs
+  :config
+  (setq treemacs-is-never-other-window t)
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)
