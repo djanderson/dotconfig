@@ -467,9 +467,65 @@
 
 ;; Arduino (http://www.emacswiki.org/emacs-en/ArduinoSupport)
 
+;; Javascript / Typescript
+
+(use-package tide :ensure t)
+(use-package company :ensure t)
+(use-package flycheck :ensure t)
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+(require 'web-mode)
+
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+
+(add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
+
+;; enable typescript - tslint checker
+(flycheck-add-mode 'typescript-tslint 'web-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://emacs.stackexchange.com/a/5583
+(defun insert-color-hex (&optional arg)
+  "Select a color and insert its 24-bit hexadecimal RGB format.
+
+With prefix argument \\[universal-argument] insert the 48-bit value."
+  (interactive "*P")
+  (let ((buf (current-buffer)))
+    (list-colors-display
+     nil nil `(lambda (name)
+                (interactive)
+                (quit-window)
+                (with-current-buffer ,buf
+                  (insert (apply #'color-rgb-to-hex
+                                 (nconc (color-name-to-rgb name)
+                                        (unless (consp ',arg)
+                                          (list (or ,arg 2)))))))))))
 
 ;; https://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
 ;; (+ 1 2)C-c e -> 3
