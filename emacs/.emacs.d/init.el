@@ -48,6 +48,12 @@
   (setq TeX-parse-self t)
   (setq-default TeX-master nil))
 
+;; TODO: want to use SPC TAB for 'mode-line-other-buffer
+(use-package key-chord
+  :config
+  (key-chord-mode 1)
+  (key-chord-define-global "jk" 'mode-line-other-buffer))
+
 (use-package treemacs
   :config
   (setq treemacs-is-never-other-window t)
@@ -219,7 +225,6 @@
     :config
     (which-key-mode))
 
-
 (use-package yasnippet
   :ensure
   :config
@@ -309,10 +314,6 @@
 
 (use-package blacken)
 (use-package isortify)
-
-(use-package web-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 
 ;; turn off toolbar and menubar and scrollbar
 (when window-system
@@ -425,7 +426,13 @@
   (setq shell-pop-term-shell "/bin/bash")
   (setq shell-pop-internal-mode-buffer "shell")
   (setq shell-pop-full-span t)
-  (setq shell-pop-autocd-to-working-dir nil))
+  (setq shell-pop-autocd-to-working-dir nil)
+  ;; C-x o shouldn't cycle to shells, use C-t to jump directly
+  (setq shell-pop-in-after-hook
+        (lambda nil
+          (set-window-parameter
+           (get-buffer-window
+            (buffer-name (current-buffer))) 'no-other-window t))))
 ;; C-# C-t to open # tabs
 
 ;; Binding shell-pop to C-t seems to also bind C-S-t, so revert that
@@ -498,15 +505,15 @@
 
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
 
-(require 'web-mode)
-
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-(add-hook 'web-mode-hook
-          (lambda ()
-            (when (string-equal "tsx" (file-name-extension buffer-file-name))
-              (setup-tide-mode))))
-
-(add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
+(use-package web-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                (setup-tide-mode)))))
 
 ;; enable typescript - tslint checker
 (flycheck-add-mode 'typescript-tslint 'web-mode)
