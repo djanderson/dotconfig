@@ -418,12 +418,12 @@
   ; https://github.com/kyagi/shell-pop-el/issues/51#issuecomment-297470855
   (push (cons "shell" display-buffer--same-window-action) display-buffer-alist)
   :bind
-  ("<f4>" . shell-pop)
+  ("C-S-t" . shell-pop)
   :config
   (setq shell-pop-internal-mode-buffer "shell")
   (setq shell-pop-term-shell "/bin/bash")
   (setq shell-pop-full-span nil)
-  (setq shell-pop-universal-key "<f4>"))
+  (setq shell-pop-universal-key "C-S-t"))
 ;; C-# f4 to open # tabs
 
 
