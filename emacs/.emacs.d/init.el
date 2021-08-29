@@ -179,6 +179,8 @@
          (c-mode . lsp)
          (c++-mode . lsp)
          (scala-mode . lsp)
+         (web-mode . lsp)
+         (typescript-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . lsp-lens-mode))
   :commands lsp)
@@ -342,7 +344,7 @@
    (quote
     (company-preview-if-just-one-frontend company-echo-metadata-frontend company-pseudo-tooltip-unless-just-one-frontend)))
  '(company-show-numbers t)
- '(company-tooltip-align-annotations f)
+ '(company-tooltip-align-annotations nil)
  '(custom-enabled-themes (quote (wombat)))
  '(package-selected-packages
    (quote
@@ -416,15 +418,18 @@
 (use-package shell-pop
   :init
   ; https://github.com/kyagi/shell-pop-el/issues/51#issuecomment-297470855
-  (push (cons "shell" display-buffer--same-window-action) display-buffer-alist)
+  (push (cons "\\*shell\\*" display-buffer--same-window-action) display-buffer-alist)
   :bind
-  ("C-S-t" . shell-pop)
+  ("C-t" . shell-pop)
   :config
-  (setq shell-pop-internal-mode-buffer "shell")
   (setq shell-pop-term-shell "/bin/bash")
-  (setq shell-pop-full-span nil)
-  (setq shell-pop-universal-key "C-S-t"))
-;; C-# f4 to open # tabs
+  (setq shell-pop-internal-mode-buffer "shell")
+  (setq shell-pop-full-span t)
+  (setq shell-pop-autocd-to-working-dir nil))
+;; C-# C-t to open # tabs
+
+;; Binding shell-pop to C-t seems to also bind C-S-t, so revert that
+(global-set-key (kbd "C-S-t") 'transpose-chars)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
