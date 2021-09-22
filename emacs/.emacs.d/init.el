@@ -435,6 +435,12 @@
             (buffer-name (current-buffer))) 'no-other-window t))))
 ;; C-# C-t to open # tabs
 
+(defun remote-shell (connection)
+  "Pops a shell for a remote CONNECTION over tramp."
+  (interactive "suser@host: ")
+  (let ((default-directory (concat "/ssh:" connection ":")))
+    (shell-pop (1+ shell-pop-last-shell-buffer-index))))
+
 ;; Binding shell-pop to C-t seems to also bind C-S-t, so revert that
 (global-set-key (kbd "C-S-t") 'transpose-chars)
 
