@@ -23,6 +23,7 @@
 (electric-pair-mode t)
 (line-number-mode t)
 (show-paren-mode t)
+(global-subword-mode t)
 
 ;; setup the package manager
 (require 'package)
@@ -350,7 +351,6 @@
  '(package-selected-packages
    (quote
     (shell-pop centaur-tabs treemacs-magit treemacs dap-mode lsp-mode protobuf-mode cmake-mode company-c-headers yafolding go-mode auto-complete isortify blacken web-mode ac-c-headers projectile markdown-preview-mode markdown-mode arduino-mode yaml-mode magit use-package rjsx-mode js2-mode paredit company-go company epl sbt-mode scala-mode expand-region toml-mode spinner queue package-utils ggtags fill-column-indicator exec-path-from-shell ensime edit-server better-defaults)))
- '(subword-mode t t)
  '(visible-bell (quote top-bottom)))
 
 (global-hl-line-mode 1)
@@ -439,7 +439,7 @@
   "Pops a shell for a remote CONNECTION over tramp."
   (interactive "suser@host: ")
   (let ((default-directory (concat "/ssh:" connection ":")))
-    (shell-pop (1+ shell-pop-last-shell-buffer-index))))
+    (shell-pop shell-pop-last-shell-buffer-index)))
 
 ;; Binding shell-pop to C-t seems to also bind C-S-t, so revert that
 (global-set-key (kbd "C-S-t") 'transpose-chars)
