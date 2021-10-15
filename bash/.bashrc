@@ -1,5 +1,7 @@
 # pull site-specific path manipulations from here
-source ~/.bash_exports
+if [ -f ~/.bash_exports ]; then
+    source ~/.bash_exports
+fi
 
 # this allow the 'apt' alias below to be expanded in sudo
 # man bash: If the last character of the alias value is a blank, then the next
