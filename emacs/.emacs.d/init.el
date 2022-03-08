@@ -199,6 +199,12 @@
   (lsp-ui-sideline-show-hover t)
   (lsp-ui-doc-enable nil))
 
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
@@ -245,8 +251,8 @@
 (use-package fill-column-indicator
   :demand
   :config
-  (setq fill-column 78)
-  (setq fci-rule-column 80)
+  (setq fill-column 88)
+  (setq fci-rule-column 90)
   (setq fci-rule-color "dimgray")
   (setq fci-rule-width 2)
   (add-hook 'c-mode-common-hook
