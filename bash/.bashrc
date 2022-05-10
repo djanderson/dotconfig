@@ -147,3 +147,15 @@ function workon() {
 }
 
 #source "$HOME/.cargo/env"
+
+
+function docker-check-context() {
+    docker_cmd=$(which docker)
+    current_context="$($docker_cmd context show)"
+    if [[ $current_context != "default" ]]; then
+       echo "WARNING: Executing command in context $current_context" >&2
+    fi
+    $docker_cmd "$@"
+}
+
+alias docker="docker-check-context "
