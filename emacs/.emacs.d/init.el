@@ -609,6 +609,8 @@ With prefix argument \\[universal-argument] insert the 48-bit value."
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+(add-hook 'comint-output-filter-functions 'comint-osc-process-output)
+
 ;; this is suspend-frame by default, ie minimize the window if graphical
 (global-unset-key [(control z)])
 
