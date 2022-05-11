@@ -158,4 +158,19 @@ function docker-check-context() {
     $docker_cmd "$@"
 }
 
+# https://stackoverflow.com/a/64389726
+function volume-size() {
+    if (( $# != 1 )); then
+        echo "volume-size: pass name of docker volume in current context" > /dev/stderr
+        return 1
+    fi
+    local volume_name=$1
+    local mount_point=$(docker volume inspect --format '{{ .Mountpoint }}' $volume_name 2>/dev/null)
+    if [[ -z "$mount_point" ]]; then
+        echo "volume-size: volume $volume_name does not exist in current context" > /dev/stderr
+        return 1
+    fi
+    docker run --rm -v /:/vm-root alpine du -sh /vm-root${mount_point}
+}
+
 alias docker="docker-check-context "
