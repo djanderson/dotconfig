@@ -157,7 +157,7 @@ function docker-check-context() {
            echo "WARNING: Executing command in context $current_context" >&2
         fi
     fi
-    $docker_cmd "$@"
+    $docker_cmd $@
 }
 
 # https://stackoverflow.com/a/64389726
