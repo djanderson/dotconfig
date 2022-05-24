@@ -150,9 +150,9 @@ function workon() {
 
 
 function docker-check-context() {
-    docker_cmd=$(which docker)
+    local docker_cmd=$(which docker)
     if [[ "$1" != "context" ]]; then
-        current_context="$($docker_cmd context show)"
+        local current_context="$($docker_cmd context show)"
         if [[ $current_context != "default" ]]; then
            echo "WARNING: Executing command in context $current_context" >&2
         fi
