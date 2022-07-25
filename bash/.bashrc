@@ -134,7 +134,7 @@ fi
 function workon() {
     if (( $# != 1 )); then
         echo "workon: pass directory name relative to $HOME" > /dev/stderr
-        return
+        return 1
     fi
     local repo="$HOME/$1"
     local venvdir="$repo/.venv"
@@ -143,6 +143,18 @@ function workon() {
         return
     fi
     cd "$repo"
+    source "$venvdir/bin/activate"
+}
+
+function mkvenv() {
+    if (( $# != 1 )); then
+        echo "mkvenv: pass project name" > /dev/stderr
+        return 1
+    fi
+    local project="$1"
+    local venvdir="$PWD/.venv"
+    echo "making venv in $venvdir with name $project"
+    python3 -m venv "$venvdir" --prompt "$project"
     source "$venvdir/bin/activate"
 }
 
