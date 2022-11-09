@@ -380,6 +380,41 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Org-mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq org-image-actual-width nil)
+
+(use-package org-bullets
+  :custom
+  ;; (org-bullets-bullet-list '("◉" "☯" "○" "☯" "✸" "☯" "✿" "☯" "✜" "☯" "◆" "☯" "▶"))
+  (org-ellipsis "⤵")
+  :hook (org-mode . org-bullets-mode))
+
+(use-package hide-mode-line)
+
+(defun presentation-setup ()
+  (setq text-scale-mode-amount 2)
+  (text-scale-mode 1)
+  (hide-mode-line-mode 1)
+  (centaur-tabs-mode 0))
+
+(defun presentation-teardown ()
+  (text-scale-mode 0)
+  (hide-mode-line-mode 0)
+  (centaur-tabs-mode 1))
+
+(use-package org-tree-slide
+  :hook ((org-tree-slide-play . presentation-setup)
+         (org-tree-slide-stop . presentation-teardown))
+  :custom
+  (org-tree-slide-slide-in-effect t)
+  (org-tree-slide-activate-message "")
+  (org-tree-slide-deactivate-message "")
+  (org-tree-slide-header t)
+  (org-tree-slide-breadcrumbs " > "))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tabs
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

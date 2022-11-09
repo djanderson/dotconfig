@@ -1,3 +1,5 @@
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 # pull site-specific path manipulations from here
 if [ -f ~/.bash_exports ]; then
     source ~/.bash_exports
@@ -7,11 +9,6 @@ fi
 # man bash: If the last character of the alias value is a blank, then the next
 # command word following the alias is also checked for alias expansion.
 alias sudo='sudo '
-
-if [ -n "$INSIDE_EMACS" ]; then
-    export TERM=rxvt-unicode-256color
-    alias apt='apt -o Dpkg::Progress-Fancy="0" -o APT::Color="1"'
-fi
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
@@ -188,3 +185,4 @@ function volume-size() {
 }
 
 alias docker="docker-check-context "
+. "$HOME/.cargo/env"
