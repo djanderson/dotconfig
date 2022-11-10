@@ -1,7 +1,5 @@
-" Turn on line numbers
-set nu!
-" Show cursor line
-set cul
+set background=dark
+colorscheme slate
 set autoindent smarttab
 set noexpandtab tabstop=4 shiftwidth=4
 set guifont=Monospace\ 14
@@ -10,7 +8,6 @@ set spelllang=en
 nnoremap <F5> :set invpaste paste?<Enter>
 imap <F5> <C-O><F5>
 set pastetoggle=<F5>
-colors ron
 syntax on
 set nobackup
 
