@@ -111,6 +111,4 @@ export EDITOR='emacsclient'
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias d=docker
-alias docker=podman
-alias pm=podman
 alias k=kubectl
