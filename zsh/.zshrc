@@ -6,6 +6,10 @@ export ZSH="$HOME/.oh-my-zsh"
 
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/.emacs.d/bin"
+export PATH="$PATH:$HOME/.go/bin"
+export PATH="$PATH:$HOME/.cargo/bin"
+
+export GOPATH="$HOME/.go"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -69,8 +73,8 @@ ZSH_THEME="robbyrussell"
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Plugin customization
-VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
-VI_MODE_SET_CURSOR=true
+#VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+#VI_MODE_SET_CURSOR=true
 
 
 # Which plugins would you like to load?
@@ -80,11 +84,12 @@ VI_MODE_SET_CURSOR=true
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    vi-mode
     macos
     python
     ripgrep
     rust
+    kubectl
+    skaffold
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -112,3 +117,4 @@ export EDITOR='emacsclient'
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias d=docker
 alias k=kubectl
+alias sk=skaffold
